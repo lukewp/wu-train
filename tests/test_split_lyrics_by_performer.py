@@ -17,15 +17,36 @@ def make_test_file(lines):
 class TestImportLyricsFile(unittest.TestCase):
     def test_load_lyrics_file(self):
         """Test loading and reading the full contents of the lyrics file."""
-        self.skipTest("Not implemented: load lyrics file")
+        from src.split_lyrics_by_performer import load_lyrics_file
+        # Use the actual dataset file for this test
+        lyrics_path = os.path.join(os.path.dirname(__file__), '../wu-tang-clan-lyrics-dataset/wu-tang.txt')
+        lyrics_path = os.path.abspath(lyrics_path)
+        contents = load_lyrics_file(lyrics_path)
+        # Check that the file is not empty and contains expected performer label(s)
+        self.assertIsInstance(contents, str)
+        self.assertTrue(len(contents) > 100)  # Should be a large file
+        self.assertIn('[raekwon]', contents.lower())
 
     def test_file_not_found(self):
         """Test handling of file not found error."""
-        self.skipTest("Not implemented: file not found error handling")
+        from src.split_lyrics_by_performer import load_lyrics_file
+        missing_path = os.path.join(os.path.dirname(__file__), 'this_file_does_not_exist.txt')
+        with self.assertRaises(FileNotFoundError):
+            load_lyrics_file(missing_path)
 
     def test_encoding_error(self):
         """Test handling of encoding errors when reading file."""
-        self.skipTest("Not implemented: encoding error handling")
+        from src.split_lyrics_by_performer import load_lyrics_file
+        # Create a file with invalid utf-8 bytes
+        tmpdir = tempfile.mkdtemp()
+        bad_file = os.path.join(tmpdir, 'bad_encoding.txt')
+        # Write some bytes that are not valid UTF-8
+        with open(bad_file, 'wb') as f:
+            f.write(b'\xff\xfe\xfd\xfc')
+        # Now try to read it as utf-8, should raise UnicodeDecodeError
+        with self.assertRaises(UnicodeDecodeError):
+            load_lyrics_file(bad_file)
+        shutil.rmtree(tmpdir)
 
 # 2. Trim and Extract Key Candidates
 class TestTrimAndExtractKeyCandidates(unittest.TestCase):

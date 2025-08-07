@@ -3,9 +3,9 @@
 This document outlines the step-by-step process to build the lyrics splitting software, guided by the test stubs in `tests/test_split_lyrics_by_performer.py`.
 
 ## 1. Import the Lyrics Text File
-- [ ] Implement logic to load and read the full contents of `wu-tang-clan-lyrics-dataset/wu-tang.txt`.
-- [ ] Handle file not found and encoding errors gracefully.
-- [ ] Test: `test_import_wu_tang_txt`
+- [x] Implement logic to load and read the full contents of `wu-tang-clan-lyrics-dataset/wu-tang.txt`.
+- [x] Handle file not found and encoding errors gracefully.
+- [x] Test: `test_import_wu_tang_txt`
 
 ## 2. Trim and Extract Key Candidates
 - [ ] Parse the loaded text for `[xxx]` key patterns.
