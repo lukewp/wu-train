@@ -1,0 +1,20 @@
+{
+    "name": "Wu-Tang Lyrics Processing",
+    "image": "mcr.microsoft.com/devcontainers/python:3.11",
+    "features": {},
+    "customizations": {
+        "vscode": {
+            "settings": {},
+            "extensions": [
+                "ms-python.python",
+                "ms-toolsai.jupyter-keymap",
+                "ms-toolsai.jupyter",
+                "ms-toolsai.vscode-jupyter-cell-tags",
+                "ms-toolsai.vscode-jupyter-slideshow",
+                "ms-toolsai.jupyter-renderers",
+                "ms-toolsai.datawrangler"
+            ]
+        }
+    },
+    "postCreateCommand": "pip install -r ./requirements.txt || true"
+}

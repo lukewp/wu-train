@@ -1,0 +1,7 @@
+# Python requirements for [@mathisve/wu-tang-clan-lyrics-dataset](https://github.com/mathisve/wu-tang-clan-lyrics-dataset) Wu-Tang lyrics processing:
+tqdm
+requests
+beautifulsoup4
+
+# For Jupyter:
+ipykernel
