@@ -8,14 +8,14 @@ This document outlines the step-by-step process to build the lyrics splitting so
 - [x] Test: `test_import_wu_tang_txt`
 
 ## 2. Trim and Extract Key Candidates
-- [ ] Parse the loaded text for `[xxx]` key patterns.
-- [ ] Trim whitespace and remove extraneous characters from key candidates.
-- [ ] Test: `test_trim_and_extract_key_candidates`
+- [x] Parse the loaded text for `[xxx]` key patterns.
+- [x] Trim whitespace and remove extraneous characters from key candidates.
+- [x] Test: `test_trim_and_extract_key_candidates`
 
 ## 3. Identify Performer Keys
-- [ ] Load `src/performer_aliases.json` and build a mapping of canonical performer names and aliases.
-- [ ] Match key candidates against the alias mapping to identify performer keys.
-- [ ] Test: `test_identify_performer_keys`
+- [x] Load `src/performer_aliases.json` and build a mapping of canonical performer names and aliases.
+- [x] Match key candidates against the alias mapping to identify performer keys.
+- [X] Test: `test_identify_performer_keys`
 
 ## 4. Identify Non-Performer Keys
 - [ ] Define and detect "fake keys" (e.g., chorus, 2x, etc.) that do not indicate a performer.
