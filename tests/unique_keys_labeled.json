@@ -1,0 +1,2314 @@
+[
+  {
+    "key": "*sound of bomb dropping*",
+    "type": "ignore"
+  },
+  {
+    "key": "1",
+    "type": "ignore"
+  },
+  {
+    "key": "12 o'clock",
+    "type": "skip"
+  },
+  {
+    "key": "15 seconds of instrumental",
+    "type": "ignore"
+  },
+  {
+    "key": "35 seconds of instrumental pass until the martial arts samples",
+    "type": "ignore"
+  },
+  {
+    "key": "62nd assassin",
+    "type": "skip"
+  },
+  {
+    "key": "9th prince",
+    "type": "performer"
+  },
+  {
+    "key": "aesop rock",
+    "type": "performer"
+  },
+  {
+    "key": "all",
+    "type": "skip"
+  },
+  {
+    "key": "all laughing",
+    "type": "skip"
+  },
+  {
+    "key": "az",
+    "type": "skip"
+  },
+  {
+    "key": "beat changes",
+    "type": "ignore"
+  },
+  {
+    "key": "beat drops",
+    "type": "ignore"
+  },
+  {
+    "key": "beat switch",
+    "type": "ignore"
+  },
+  {
+    "key": "bees buzzing",
+    "type": "ignore"
+  },
+  {
+    "key": "beez buzzing",
+    "type": "ignore"
+  },
+  {
+    "key": "bell rings",
+    "type": "ignore"
+  },
+  {
+    "key": "beretta 9",
+    "type": "performer"
+  },
+  {
+    "key": "beretta 9 (rza)",
+    "type": "performer"
+  },
+  {
+    "key": "billy danze",
+    "type": "skip"
+  },
+  {
+    "key": "black knights",
+    "type": "skip"
+  },
+  {
+    "key": "bobby digital",
+    "type": "performer"
+  },
+  {
+    "key": "break",
+    "type": "ignore"
+  },
+  {
+    "key": "break during interlude - ghostface killah",
+    "type": "performer"
+  },
+  {
+    "key": "break method man (rza) {prodical}",
+    "type": "performer"
+  },
+  {
+    "key": "break shyheim",
+    "type": "performer"
+  },
+  {
+    "key": "bridge",
+    "type": "ignore"
+  },
+  {
+    "key": "bridge + hook",
+    "type": "ignore"
+  },
+  {
+    "key": "bridge - method man",
+    "type": "performer"
+  },
+  {
+    "key": "bridge - rza",
+    "type": "performer"
+  },
+  {
+    "key": "bridge - the o'jays",
+    "type": "skip"
+  },
+  {
+    "key": "bronze nazareth",
+    "type": "skip"
+  },
+  {
+    "key": "buddha monk",
+    "type": "skip"
+  },
+  {
+    "key": "busta rhymes",
+    "type": "skip"
+  },
+  {
+    "key": "byata",
+    "type": "skip"
+  },
+  {
+    "key": "c-rayz walz",
+    "type": "skip"
+  },
+  {
+    "key": "cappadonna",
+    "type": "performer"
+  },
+  {
+    "key": "casual",
+    "type": "skip"
+  },
+  {
+    "key": "cheo hodari coker",
+    "type": "skip"
+  },
+  {
+    "key": "chorus",
+    "type": "ignore"
+  },
+  {
+    "key": "chorus (sampled)",
+    "type": "skip"
+  },
+  {
+    "key": "chorus (u-god) 2x",
+    "type": "performer"
+  },
+  {
+    "key": "chorus - 0.75x",
+    "type": "skip"
+  },
+  {
+    "key": "chorus - 2x",
+    "type": "ignore"
+  },
+  {
+    "key": "chorus - first 1 2",
+    "type": "ignore"
+  },
+  {
+    "key": "chorus - last line only \"her hair\"",
+    "type": "skip"
+  },
+  {
+    "key": "chorus - odb",
+    "type": "performer"
+  },
+  {
+    "key": "chorus - repeat 2x",
+    "type": "ignore"
+  },
+  {
+    "key": "chorus 1.5x sample",
+    "type": "skip"
+  },
+  {
+    "key": "chorus 12 o'clock",
+    "type": "skip"
+  },
+  {
+    "key": "chorus 2 sunny valentine",
+    "type": "performer"
+  },
+  {
+    "key": "chorus 2x",
+    "type": "ignore"
+  },
+  {
+    "key": "chorus 2x az",
+    "type": "skip"
+  },
+  {
+    "key": "chorus 2x freda payne sample",
+    "type": "skip"
+  },
+  {
+    "key": "chorus 2x ghostface killah",
+    "type": "performer"
+  },
+  {
+    "key": "chorus 2x ghostface killah (raekwon)",
+    "type": "performer"
+  },
+  {
+    "key": "chorus 2x inspectah deck",
+    "type": "performer"
+  },
+  {
+    "key": "chorus 2x rza",
+    "type": "performer"
+  },
+  {
+    "key": "chorus 2x the reverend william burk",
+    "type": "skip"
+  },
+  {
+    "key": "chorus 2x u-god",
+    "type": "performer"
+  },
+  {
+    "key": "chorus 4x",
+    "type": "ignore"
+  },
+  {
+    "key": "chorus 4x (overlaps odb)",
+    "type": "performer"
+  },
+  {
+    "key": "chorus all",
+    "type": "skip"
+  },
+  {
+    "key": "chorus anne peebles - sampled",
+    "type": "skip"
+  },
+  {
+    "key": "chorus bapteest",
+    "type": "skip"
+  },
+  {
+    "key": "chorus bronze nazareth",
+    "type": "skip"
+  },
+  {
+    "key": "chorus cappadonna (all)",
+    "type": "performer"
+  },
+  {
+    "key": "chorus dexter wiggles (rza)",
+    "type": "performer"
+  },
+  {
+    "key": "chorus erykah badu",
+    "type": "skip"
+  },
+  {
+    "key": "chorus force md's",
+    "type": "skip"
+  },
+  {
+    "key": "chorus freemurda (shacronz)",
+    "type": "performer"
+  },
+  {
+    "key": "chorus george clinton",
+    "type": "skip"
+  },
+  {
+    "key": "chorus gerald alston",
+    "type": "performer"
+  },
+  {
+    "key": "chorus ghostface killah (u-god)",
+    "type": "performer"
+  },
+  {
+    "key": "chorus guru",
+    "type": "skip"
+  },
+  {
+    "key": "chorus gza gerald alston",
+    "type": "performer"
+  },
+  {
+    "key": "chorus hell razah",
+    "type": "skip"
+  },
+  {
+    "key": "chorus inspectah deck gerald alston",
+    "type": "performer"
+  },
+  {
+    "key": "chorus last line x2",
+    "type": "ignore"
+  },
+  {
+    "key": "chorus last two lines",
+    "type": "ignore"
+  },
+  {
+    "key": "chorus last two lines only",
+    "type": "ignore"
+  },
+  {
+    "key": "chorus latter 1 2",
+    "type": "ignore"
+  },
+  {
+    "key": "chorus lord superb",
+    "type": "skip"
+  },
+  {
+    "key": "chorus method man",
+    "type": "performer"
+  },
+  {
+    "key": "chorus method man (u-god)",
+    "type": "performer"
+  },
+  {
+    "key": "chorus method man gerald alston",
+    "type": "performer"
+  },
+  {
+    "key": "chorus ol' dirty bastard",
+    "type": "performer"
+  },
+  {
+    "key": "chorus prodical",
+    "type": "performer"
+  },
+  {
+    "key": "chorus raekwon",
+    "type": "performer"
+  },
+  {
+    "key": "chorus remedy w israel's anthem",
+    "type": "skip"
+  },
+  {
+    "key": "chorus ron isley",
+    "type": "skip"
+  },
+  {
+    "key": "chorus rza",
+    "type": "performer"
+  },
+  {
+    "key": "chorus sample",
+    "type": "skip"
+  },
+  {
+    "key": "chorus sample of \"gypsy woman\" by curtis mayfield",
+    "type": "skip"
+  },
+  {
+    "key": "chorus sampled singer (inpsectah deck)",
+    "type": "performer"
+  },
+  {
+    "key": "chorus sampled singer (raekwon)",
+    "type": "performer"
+  },
+  {
+    "key": "chorus sampled singer {u-god} (raekwon)",
+    "type": "performer"
+  },
+  {
+    "key": "chorus serj tankian",
+    "type": "performer"
+  },
+  {
+    "key": "chorus shyheim",
+    "type": "performer"
+  },
+  {
+    "key": "chorus suga bang bang",
+    "type": "performer"
+  },
+  {
+    "key": "chorus suga bang bang (rza) {prodical}",
+    "type": "performer"
+  },
+  {
+    "key": "chorus sunny valentine",
+    "type": "performer"
+  },
+  {
+    "key": "chorus sunny valentine (tash mahogany)",
+    "type": "performer"
+  },
+  {
+    "key": "chorus tekitha",
+    "type": "skip"
+  },
+  {
+    "key": "chorus the genius",
+    "type": "performer"
+  },
+  {
+    "key": "chorus the reverend william burk",
+    "type": "skip"
+  },
+  {
+    "key": "chorus thea van seijen (rza)",
+    "type": "performer"
+  },
+  {
+    "key": "chorus tre williams",
+    "type": "skip"
+  },
+  {
+    "key": "chorus trife diesel",
+    "type": "performer"
+  },
+  {
+    "key": "chorus u-god",
+    "type": "performer"
+  },
+  {
+    "key": "chorus u-god singing",
+    "type": "performer"
+  },
+  {
+    "key": "chorus various movie and rap samples",
+    "type": "skip"
+  },
+  {
+    "key": "chorus w ad libs",
+    "type": "skip"
+  },
+  {
+    "key": "chorus w rza",
+    "type": "performer"
+  },
+  {
+    "key": "chorus wu-tang clan",
+    "type": "skip"
+  },
+  {
+    "key": "chorus wu-tang clan + (flavor flav)",
+    "type": "skip"
+  },
+  {
+    "key": "chorus x2",
+    "type": "ignore"
+  },
+  {
+    "key": "chorus x2 all",
+    "type": "skip"
+  },
+  {
+    "key": "chorus x2 all - singing",
+    "type": "skip"
+  },
+  {
+    "key": "chorus x2 both",
+    "type": "ignore"
+  },
+  {
+    "key": "chorus x2 ndira",
+    "type": "skip"
+  },
+  {
+    "key": "chorus x2 sandman - singing",
+    "type": "skip"
+  },
+  {
+    "key": "chorus x2 solomon childs",
+    "type": "skip"
+  },
+  {
+    "key": "chorus x2 suga bang bang",
+    "type": "performer"
+  },
+  {
+    "key": "chorus x2 u-god",
+    "type": "performer"
+  },
+  {
+    "key": "chorus x3",
+    "type": "ignore"
+  },
+  {
+    "key": "chorus x3.5",
+    "type": "skip"
+  },
+  {
+    "key": "chorus x3.5 doc doom",
+    "type": "performer"
+  },
+  {
+    "key": "chorus x4",
+    "type": "ignore"
+  },
+  {
+    "key": "chorus x4 inspectah deck",
+    "type": "performer"
+  },
+  {
+    "key": "chorus x4 sampled singer (raekwon)",
+    "type": "performer"
+  },
+  {
+    "key": "chorus x6",
+    "type": "ignore"
+  },
+  {
+    "key": "chris rivers",
+    "type": "skip"
+  },
+  {
+    "key": "christbearer",
+    "type": "skip"
+  },
+  {
+    "key": "christbearer (meko the pharaoh)",
+    "type": "performer"
+  },
+  {
+    "key": "chrous",
+    "type": "ignore"
+  },
+  {
+    "key": "chrous rza",
+    "type": "performer"
+  },
+  {
+    "key": "cilvaringz",
+    "type": "skip"
+  },
+  {
+    "key": "conversation continued from the end of duck seazon",
+    "type": "skip"
+  },
+  {
+    "key": "cop's walkie talkie is heard",
+    "type": "skip"
+  },
+  {
+    "key": "cop's walkie talkie still babbling",
+    "type": "skip"
+  },
+  {
+    "key": "cormega",
+    "type": "skip"
+  },
+  {
+    "key": "coughing",
+    "type": "ignore"
+  },
+  {
+    "key": "crazy drunken ass odb singin again",
+    "type": "performer"
+  },
+  {
+    "key": "crisis",
+    "type": "skip"
+  },
+  {
+    "key": "cut and scratch \"wu-tang style\"",
+    "type": "skip"
+  },
+  {
+    "key": "cut to kung-fu clip",
+    "type": "skip"
+  },
+  {
+    "key": "d'angelo",
+    "type": "skip"
+  },
+  {
+    "key": "deck",
+    "type": "performer"
+  },
+  {
+    "key": "del tha funky homosapien",
+    "type": "skip"
+  },
+  {
+    "key": "doc doom",
+    "type": "performer"
+  },
+  {
+    "key": "doc doom (meko the pharaoh)",
+    "type": "performer"
+  },
+  {
+    "key": "doc doom (sandman)",
+    "type": "performer"
+  },
+  {
+    "key": "dogs barking",
+    "type": "ignore"
+  },
+  {
+    "key": "dom pachino",
+    "type": "skip"
+  },
+  {
+    "key": "drunken dragon",
+    "type": "skip"
+  },
+  {
+    "key": "eerie winds blowing",
+    "type": "ignore"
+  },
+  {
+    "key": "even more kung-fu samples",
+    "type": "skip"
+  },
+  {
+    "key": "everything gets chaotic",
+    "type": "skip"
+  },
+  {
+    "key": "fat joe",
+    "type": "skip"
+  },
+  {
+    "key": "flavor flav",
+    "type": "skip"
+  },
+  {
+    "key": "freda payne sample",
+    "type": "skip"
+  },
+  {
+    "key": "freemurda",
+    "type": "performer"
+  },
+  {
+    "key": "freemurder",
+    "type": "performer"
+  },
+  {
+    "key": "genius",
+    "type": "performer"
+  },
+  {
+    "key": "gerald alston",
+    "type": "performer"
+  },
+  {
+    "key": "ghostface",
+    "type": "performer"
+  },
+  {
+    "key": "ghostface - whispering",
+    "type": "performer"
+  },
+  {
+    "key": "ghostface killah",
+    "type": "performer"
+  },
+  {
+    "key": "ghostface killah (rza)",
+    "type": "performer"
+  },
+  {
+    "key": "girl 4x",
+    "type": "skip"
+  },
+  {
+    "key": "glasses jewelry tinkling",
+    "type": "ignore"
+  },
+  {
+    "key": "gong bangs",
+    "type": "ignore"
+  },
+  {
+    "key": "gun blast",
+    "type": "ignore"
+  },
+  {
+    "key": "gunblast",
+    "type": "ignore"
+  },
+  {
+    "key": "gunshot",
+    "type": "ignore"
+  },
+  {
+    "key": "guru",
+    "type": "skip"
+  },
+  {
+    "key": "gza",
+    "type": "performer"
+  },
+  {
+    "key": "gza (rza)",
+    "type": "performer"
+  },
+  {
+    "key": "havoc",
+    "type": "skip"
+  },
+  {
+    "key": "hell razah",
+    "type": "skip"
+  },
+  {
+    "key": "hook",
+    "type": "ignore"
+  },
+  {
+    "key": "hook + bridge",
+    "type": "ignore"
+  },
+  {
+    "key": "hook - method man",
+    "type": "performer"
+  },
+  {
+    "key": "hook - nathaniel",
+    "type": "skip"
+  },
+  {
+    "key": "hook - rza",
+    "type": "performer"
+  },
+  {
+    "key": "hook - sample",
+    "type": "skip"
+  },
+  {
+    "key": "hook 2 - the o'jays",
+    "type": "skip"
+  },
+  {
+    "key": "hook gerald alston",
+    "type": "performer"
+  },
+  {
+    "key": "hook gerald alston (method man)",
+    "type": "performer"
+  },
+  {
+    "key": "hook gerald alston (rza)",
+    "type": "performer"
+  },
+  {
+    "key": "hook inspectah deck - singing",
+    "type": "performer"
+  },
+  {
+    "key": "hook madame d",
+    "type": "performer"
+  },
+  {
+    "key": "hook method man",
+    "type": "performer"
+  },
+  {
+    "key": "hook method man (george clinton)",
+    "type": "performer"
+  },
+  {
+    "key": "hook paulissa morgan",
+    "type": "skip"
+  },
+  {
+    "key": "hook suga bang bang",
+    "type": "performer"
+  },
+  {
+    "key": "hook with snoop's \"say what\" at end of amateur...",
+    "type": "skip"
+  },
+  {
+    "key": "hook x2",
+    "type": "ignore"
+  },
+  {
+    "key": "hook x2 (method man)",
+    "type": "performer"
+  },
+  {
+    "key": "hook x2 - streetlife",
+    "type": "skip"
+  },
+  {
+    "key": "hook x2 suga bang bang",
+    "type": "performer"
+  },
+  {
+    "key": "hook x4",
+    "type": "ignore"
+  },
+  {
+    "key": "howling wolves",
+    "type": "skip"
+  },
+  {
+    "key": "hue hef",
+    "type": "skip"
+  },
+  {
+    "key": "ins",
+    "type": "performer"
+  },
+  {
+    "key": "inspectah deck",
+    "type": "performer"
+  },
+  {
+    "key": "inspector deck",
+    "type": "performer"
+  },
+  {
+    "key": "instrumental for 15 seconds, then movie samples",
+    "type": "skip"
+  },
+  {
+    "key": "instrumental for 40 seconds",
+    "type": "ignore"
+  },
+  {
+    "key": "instrumental for the first 11 seconds",
+    "type": "ignore"
+  },
+  {
+    "key": "interlude",
+    "type": "ignore"
+  },
+  {
+    "key": "interlude 1 - ol' dirty bastard",
+    "type": "performer"
+  },
+  {
+    "key": "interlude 2 - ol' dirty bastard",
+    "type": "performer"
+  },
+  {
+    "key": "interlude 3 - rza",
+    "type": "performer"
+  },
+  {
+    "key": "interlude cappadonna",
+    "type": "performer"
+  },
+  {
+    "key": "interlude cormega",
+    "type": "skip"
+  },
+  {
+    "key": "interlude crisis (monk)",
+    "type": "skip"
+  },
+  {
+    "key": "interlude del tha funky homosapien",
+    "type": "skip"
+  },
+  {
+    "key": "interlude erykah badu",
+    "type": "skip"
+  },
+  {
+    "key": "interlude george clinton",
+    "type": "skip"
+  },
+  {
+    "key": "interlude inspectah deck (movie sample)",
+    "type": "performer"
+  },
+  {
+    "key": "interlude inspectah deck - over hook",
+    "type": "performer"
+  },
+  {
+    "key": "interlude masta killa, method man, raekwon",
+    "type": "performer"
+  },
+  {
+    "key": "interlude movie sample",
+    "type": "skip"
+  },
+  {
+    "key": "interlude prodical (timbo king)",
+    "type": "unknown"
+  },
+  {
+    "key": "interlude raekwon (method man)",
+    "type": "performer"
+  },
+  {
+    "key": "interlude rza",
+    "type": "performer"
+  },
+  {
+    "key": "interlude rza {prodical}",
+    "type": "performer"
+  },
+  {
+    "key": "interlude sean price",
+    "type": "skip"
+  },
+  {
+    "key": "intro",
+    "type": "ignore"
+  },
+  {
+    "key": "intro - kung-fu sample",
+    "type": "skip"
+  },
+  {
+    "key": "intro - masta killa",
+    "type": "performer"
+  },
+  {
+    "key": "intro - method man",
+    "type": "performer"
+  },
+  {
+    "key": "intro - rza",
+    "type": "performer"
+  },
+  {
+    "key": "intro 12 o'clock (rza)",
+    "type": "performer"
+  },
+  {
+    "key": "intro 12 o'clock (sandman)",
+    "type": "skip"
+  },
+  {
+    "key": "intro aesop rock",
+    "type": "performer"
+  },
+  {
+    "key": "intro beretta 9 (rza)",
+    "type": "performer"
+  },
+  {
+    "key": "intro chorus madame d",
+    "type": "performer"
+  },
+  {
+    "key": "intro chorus ol dirty osirus",
+    "type": "performer"
+  },
+  {
+    "key": "intro chorus raekwon",
+    "type": "performer"
+  },
+  {
+    "key": "intro del tha funky homosapien",
+    "type": "skip"
+  },
+  {
+    "key": "intro doc doom",
+    "type": "performer"
+  },
+  {
+    "key": "intro gerald alston",
+    "type": "performer"
+  },
+  {
+    "key": "intro ghostface killah",
+    "type": "performer"
+  },
+  {
+    "key": "intro ghostface killah (rza) {method man}",
+    "type": "performer"
+  },
+  {
+    "key": "intro hell razah",
+    "type": "skip"
+  },
+  {
+    "key": "intro inspectah deck",
+    "type": "performer"
+  },
+  {
+    "key": "intro killah priest",
+    "type": "performer"
+  },
+  {
+    "key": "intro killah priest, raekwon",
+    "type": "performer"
+  },
+  {
+    "key": "intro kung-fu movie samples",
+    "type": "skip"
+  },
+  {
+    "key": "intro masta killa",
+    "type": "performer"
+  },
+  {
+    "key": "intro method man",
+    "type": "performer"
+  },
+  {
+    "key": "intro method man (raekwon)",
+    "type": "performer"
+  },
+  {
+    "key": "intro method man w sample (sunny valentine)",
+    "type": "performer"
+  },
+  {
+    "key": "intro miko the pharoah (christbearer)",
+    "type": "performer"
+  },
+  {
+    "key": "intro movie sample (raekwon)",
+    "type": "performer"
+  },
+  {
+    "key": "intro movie samples",
+    "type": "skip"
+  },
+  {
+    "key": "intro ol' dirty bastard",
+    "type": "performer"
+  },
+  {
+    "key": "intro p.c. (shacronz)",
+    "type": "performer"
+  },
+  {
+    "key": "intro part one method man (album version)",
+    "type": "performer"
+  },
+  {
+    "key": "intro part two genius (all versions)",
+    "type": "performer"
+  },
+  {
+    "key": "intro prodical",
+    "type": "performer"
+  },
+  {
+    "key": "intro raekwon",
+    "type": "performer"
+  },
+  {
+    "key": "intro raekwon (samples)",
+    "type": "performer"
+  },
+  {
+    "key": "intro raekwon the chef",
+    "type": "performer"
+  },
+  {
+    "key": "intro ras kass",
+    "type": "skip"
+  },
+  {
+    "key": "intro ras kass (scaramanga allah)",
+    "type": "performer"
+  },
+  {
+    "key": "intro remedy",
+    "type": "skip"
+  },
+  {
+    "key": "intro roxanne",
+    "type": "skip"
+  },
+  {
+    "key": "intro rza",
+    "type": "performer"
+  },
+  {
+    "key": "intro sample",
+    "type": "skip"
+  },
+  {
+    "key": "intro samples",
+    "type": "skip"
+  },
+  {
+    "key": "intro serj tankian (rza) {masta killa}",
+    "type": "performer"
+  },
+  {
+    "key": "intro shyheim",
+    "type": "performer"
+  },
+  {
+    "key": "intro skit",
+    "type": "ignore"
+  },
+  {
+    "key": "intro street life, (method man)",
+    "type": "performer"
+  },
+  {
+    "key": "intro the genius gza (from \"clan in da front\")",
+    "type": "performer"
+  },
+  {
+    "key": "intro the reverend william burk",
+    "type": "skip"
+  },
+  {
+    "key": "intro timbo king (prodigal sunn) {byata}",
+    "type": "skip"
+  },
+  {
+    "key": "intro u-god",
+    "type": "performer"
+  },
+  {
+    "key": "intro wu-tang clan",
+    "type": "skip"
+  },
+  {
+    "key": "isaac hayes",
+    "type": "skip"
+  },
+  {
+    "key": "islord",
+    "type": "skip"
+  },
+  {
+    "key": "j-live",
+    "type": "skip"
+  },
+  {
+    "key": "jail interlude",
+    "type": "skip"
+  },
+  {
+    "key": "junior reid",
+    "type": "skip"
+  },
+  {
+    "key": "kardinal offishial",
+    "type": "skip"
+  },
+  {
+    "key": "khalid",
+    "type": "skip"
+  },
+  {
+    "key": "killa sin",
+    "type": "skip"
+  },
+  {
+    "key": "killah priest",
+    "type": "performer"
+  },
+  {
+    "key": "killarmy",
+    "type": "skip"
+  },
+  {
+    "key": "kool g. rap",
+    "type": "skip"
+  },
+  {
+    "key": "kung fu sample",
+    "type": "skip"
+  },
+  {
+    "key": "kung-fu sample - over chorus",
+    "type": "skip"
+  },
+  {
+    "key": "kung-fu sample from \"8 diagram pole fighter\"",
+    "type": "skip"
+  },
+  {
+    "key": "la the darkman",
+    "type": "skip"
+  },
+  {
+    "key": "laughing",
+    "type": "ignore"
+  },
+  {
+    "key": "leatha face",
+    "type": "performer"
+  },
+  {
+    "key": "letha face",
+    "type": "performer"
+  },
+  {
+    "key": "lil' fame",
+    "type": "skip"
+  },
+  {
+    "key": "littles",
+    "type": "skip"
+  },
+  {
+    "key": "lord superb",
+    "type": "skip"
+  },
+  {
+    "key": "madam scheez",
+    "type": "skip"
+  },
+  {
+    "key": "madame d",
+    "type": "performer"
+  },
+  {
+    "key": "man praying in hebrew",
+    "type": "skip"
+  },
+  {
+    "key": "man praying in hebrew during intro",
+    "type": "skip"
+  },
+  {
+    "key": "man speaking mandarin",
+    "type": "skip"
+  },
+  {
+    "key": "martial arts movie sample",
+    "type": "skip"
+  },
+  {
+    "key": "masta ace",
+    "type": "skip"
+  },
+  {
+    "key": "masta killa",
+    "type": "performer"
+  },
+  {
+    "key": "masta killa (method man)",
+    "type": "performer"
+  },
+  {
+    "key": "mathematics",
+    "type": "skip"
+  },
+  {
+    "key": "meko the pharaoh",
+    "type": "performer"
+  },
+  {
+    "key": "meth",
+    "type": "performer"
+  },
+  {
+    "key": "meth over hook",
+    "type": "performer"
+  },
+  {
+    "key": "meth over hook to end",
+    "type": "performer"
+  },
+  {
+    "key": "meth rza",
+    "type": "performer"
+  },
+  {
+    "key": "method",
+    "type": "performer"
+  },
+  {
+    "key": "method man",
+    "type": "performer"
+  },
+  {
+    "key": "method man (prodical)",
+    "type": "performer"
+  },
+  {
+    "key": "method man (raekwon)",
+    "type": "performer"
+  },
+  {
+    "key": "mf doom",
+    "type": "skip"
+  },
+  {
+    "key": "mixing then fade away",
+    "type": "skip"
+  },
+  {
+    "key": "monk",
+    "type": "skip"
+  },
+  {
+    "key": "more kung-fu samples",
+    "type": "skip"
+  },
+  {
+    "key": "movie sample",
+    "type": "skip"
+  },
+  {
+    "key": "movie samples from \"willie dynamite\"",
+    "type": "skip"
+  },
+  {
+    "key": "music fades in",
+    "type": "ignore"
+  },
+  {
+    "key": "music fades out",
+    "type": "ignore"
+  },
+  {
+    "key": "myalansky",
+    "type": "skip"
+  },
+  {
+    "key": "mzee jones",
+    "type": "skip"
+  },
+  {
+    "key": "nas",
+    "type": "skip"
+  },
+  {
+    "key": "odb",
+    "type": "performer"
+  },
+  {
+    "key": "odb + snoop",
+    "type": "performer"
+  },
+  {
+    "key": "odb 4x",
+    "type": "performer"
+  },
+  {
+    "key": "odb hook",
+    "type": "performer"
+  },
+  {
+    "key": "odb, drunken dragon and buddha monk",
+    "type": "performer"
+  },
+  {
+    "key": "ol dirty bastard",
+    "type": "performer"
+  },
+  {
+    "key": "ol dirty singing",
+    "type": "performer"
+  },
+  {
+    "key": "ol dirty sings again",
+    "type": "performer"
+  },
+  {
+    "key": "ol dirty starts singing",
+    "type": "performer"
+  },
+  {
+    "key": "ol' dirty bastard",
+    "type": "performer"
+  },
+  {
+    "key": "ol' dirty bastard in background repeating",
+    "type": "performer"
+  },
+  {
+    "key": "ol' dirty bastard singin' (rza)",
+    "type": "performer"
+  },
+  {
+    "key": "ol' dirty bastard singing (ms. roxy)",
+    "type": "performer"
+  },
+  {
+    "key": "outro",
+    "type": "ignore"
+  },
+  {
+    "key": "outro - rza",
+    "type": "performer"
+  },
+  {
+    "key": "outro 12 o'clock",
+    "type": "skip"
+  },
+  {
+    "key": "outro all",
+    "type": "skip"
+  },
+  {
+    "key": "outro del tha funky homosapien",
+    "type": "skip"
+  },
+  {
+    "key": "outro freemurder",
+    "type": "performer"
+  },
+  {
+    "key": "outro george clinton",
+    "type": "skip"
+  },
+  {
+    "key": "outro killah priest",
+    "type": "performer"
+  },
+  {
+    "key": "outro kung fu sample",
+    "type": "skip"
+  },
+  {
+    "key": "outro ol' dirty bastard",
+    "type": "performer"
+  },
+  {
+    "key": "outro prodical (rza)",
+    "type": "performer"
+  },
+  {
+    "key": "outro prodical *over madame d's singing*",
+    "type": "performer"
+  },
+  {
+    "key": "outro raekwon and others",
+    "type": "performer"
+  },
+  {
+    "key": "outro raekwon and tekitha",
+    "type": "performer"
+  },
+  {
+    "key": "outro remedy",
+    "type": "skip"
+  },
+  {
+    "key": "outro roxanne",
+    "type": "skip"
+  },
+  {
+    "key": "outro rza",
+    "type": "performer"
+  },
+  {
+    "key": "outro sample to fade",
+    "type": "skip"
+  },
+  {
+    "key": "outro shyheim",
+    "type": "performer"
+  },
+  {
+    "key": "outro skit",
+    "type": "ignore"
+  },
+  {
+    "key": "outro spice 1",
+    "type": "skip"
+  },
+  {
+    "key": "outro tre williams",
+    "type": "skip"
+  },
+  {
+    "key": "outro trife diesel (cappadonna)",
+    "type": "performer"
+  },
+  {
+    "key": "p.c.",
+    "type": "skip"
+  },
+  {
+    "key": "p.r. terrorist",
+    "type": "skip"
+  },
+  {
+    "key": "park hillians",
+    "type": "skip"
+  },
+  {
+    "key": "pharoahe monch",
+    "type": "skip"
+  },
+  {
+    "key": "phone skit rza (\"billy\")",
+    "type": "performer"
+  },
+  {
+    "key": "planet asia",
+    "type": "skip"
+  },
+  {
+    "key": "prince rakeem",
+    "type": "performer"
+  },
+  {
+    "key": "prodical",
+    "type": "performer"
+  },
+  {
+    "key": "prodigal sunn",
+    "type": "skip"
+  },
+  {
+    "key": "r-mean",
+    "type": "skip"
+  },
+  {
+    "key": "r.a. the rugged man",
+    "type": "skip"
+  },
+  {
+    "key": "raekwon",
+    "type": "performer"
+  },
+  {
+    "key": "raekwon (masta killa)",
+    "type": "unknown"
+  },
+  {
+    "key": "raekwon and method man",
+    "type": "performer"
+  },
+  {
+    "key": "raekwon chattin with shy",
+    "type": "performer"
+  },
+  {
+    "key": "raekwon conversating with some people",
+    "type": "performer"
+  },
+  {
+    "key": "raekwon the chef",
+    "type": "performer"
+  },
+  {
+    "key": "ras kass",
+    "type": "skip"
+  },
+  {
+    "key": "redman",
+    "type": "skip"
+  },
+  {
+    "key": "ref dreddy kruger",
+    "type": "skip"
+  },
+  {
+    "key": "refrain",
+    "type": "ignore"
+  },
+  {
+    "key": "refrain - ol' dirty bastard",
+    "type": "performer"
+  },
+  {
+    "key": "remedy",
+    "type": "skip"
+  },
+  {
+    "key": "repeat",
+    "type": "ignore"
+  },
+  {
+    "key": "repeat 1",
+    "type": "ignore"
+  },
+  {
+    "key": "repeat 1 w redman and method ad-libs (4x)",
+    "type": "performer"
+  },
+  {
+    "key": "repeat 2x",
+    "type": "ignore"
+  },
+  {
+    "key": "repeat both 4x",
+    "type": "ignore"
+  },
+  {
+    "key": "repeat both lines 4x",
+    "type": "ignore"
+  },
+  {
+    "key": "repeat last line x4",
+    "type": "ignore"
+  },
+  {
+    "key": "reversed sample - rza",
+    "type": "performer"
+  },
+  {
+    "key": "rock marciano",
+    "type": "performer"
+  },
+  {
+    "key": "rocket fired, whistles off and explodes, breaking glass",
+    "type": "ignore"
+  },
+  {
+    "key": "ron isley ad libs to fade",
+    "type": "skip"
+  },
+  {
+    "key": "rza",
+    "type": "performer"
+  },
+  {
+    "key": "rza (method man)",
+    "type": "unknown"
+  },
+  {
+    "key": "rza bobby digital",
+    "type": "performer"
+  },
+  {
+    "key": "sadat x",
+    "type": "skip"
+  },
+  {
+    "key": "sample",
+    "type": "skip"
+  },
+  {
+    "key": "sample - martin luther king",
+    "type": "skip"
+  },
+  {
+    "key": "sample repeats in background of street's intro",
+    "type": "skip"
+  },
+  {
+    "key": "sampled singer",
+    "type": "skip"
+  },
+  {
+    "key": "samples scratched \"drink to your new life.. iron flag brothers\"",
+    "type": "skip"
+  },
+  {
+    "key": "sandman",
+    "type": "skip"
+  },
+  {
+    "key": "scaramanga shallah",
+    "type": "performer"
+  },
+  {
+    "key": "scratched samples",
+    "type": "skip"
+  },
+  {
+    "key": "scratching \"soooooooooooo\" until fade",
+    "type": "skip"
+  },
+  {
+    "key": "sean price",
+    "type": "skip"
+  },
+  {
+    "key": "serj tankian",
+    "type": "performer"
+  },
+  {
+    "key": "shacronz",
+    "type": "performer"
+  },
+  {
+    "key": "shout-outs from raekwon and ghostface",
+    "type": "performer"
+  },
+  {
+    "key": "shout-outs from raekwon, ghostface and inspectah deck",
+    "type": "performer"
+  },
+  {
+    "key": "shyheim",
+    "type": "performer"
+  },
+  {
+    "key": "skip next line on the second time of chorus",
+    "type": "ignore"
+  },
+  {
+    "key": "snoop",
+    "type": "skip"
+  },
+  {
+    "key": "solomon childs",
+    "type": "skip"
+  },
+  {
+    "key": "sound of a plane crashing and explosion",
+    "type": "ignore"
+  },
+  {
+    "key": "sounds of combat",
+    "type": "ignore"
+  },
+  {
+    "key": "sounds of fighting",
+    "type": "ignore"
+  },
+  {
+    "key": "spice 1",
+    "type": "skip"
+  },
+  {
+    "key": "steven latorre",
+    "type": "skip"
+  },
+  {
+    "key": "street",
+    "type": "skip"
+  },
+  {
+    "key": "street life",
+    "type": "skip"
+  },
+  {
+    "key": "street life sample played in the background",
+    "type": "skip"
+  },
+  {
+    "key": "streetlife",
+    "type": "skip"
+  },
+  {
+    "key": "suga bang bang",
+    "type": "performer"
+  },
+  {
+    "key": "superfly",
+    "type": "skip"
+  },
+  {
+    "key": "swnkah",
+    "type": "skip"
+  },
+  {
+    "key": "swords clash",
+    "type": "ignore"
+  },
+  {
+    "key": "tash mahogany",
+    "type": "skip"
+  },
+  {
+    "key": "tek",
+    "type": "skip"
+  },
+  {
+    "key": "tekitha",
+    "type": "skip"
+  },
+  {
+    "key": "the reverend william burk",
+    "type": "skip"
+  },
+  {
+    "key": "timbo king",
+    "type": "skip"
+  },
+  {
+    "key": "tragedy khadafi",
+    "type": "skip"
+  },
+  {
+    "key": "tre williams",
+    "type": "skip"
+  },
+  {
+    "key": "trife diesel",
+    "type": "performer"
+  },
+  {
+    "key": "u-god",
+    "type": "performer"
+  },
+  {
+    "key": "unknown conversation which carries over from the last track",
+    "type": "skip"
+  },
+  {
+    "key": "unknown singer",
+    "type": "skip"
+  },
+  {
+    "key": "various talk to fade",
+    "type": "skip"
+  },
+  {
+    "key": "vast aire",
+    "type": "skip"
+  },
+  {
+    "key": "verse 1",
+    "type": "ignore"
+  },
+  {
+    "key": "verse 1 - cappadonna",
+    "type": "performer"
+  },
+  {
+    "key": "verse 1 - ghostface killah",
+    "type": "performer"
+  },
+  {
+    "key": "verse 1 - inspectah deck",
+    "type": "performer"
+  },
+  {
+    "key": "verse 1 - masta killa",
+    "type": "performer"
+  },
+  {
+    "key": "verse 1 - method man",
+    "type": "performer"
+  },
+  {
+    "key": "verse 1 - raekwon",
+    "type": "performer"
+  },
+  {
+    "key": "verse 1 - rza",
+    "type": "performer"
+  },
+  {
+    "key": "verse 1 ghostface killah",
+    "type": "performer"
+  },
+  {
+    "key": "verse 1 hell razah",
+    "type": "skip"
+  },
+  {
+    "key": "verse 1 raekwon the chef",
+    "type": "performer"
+  },
+  {
+    "key": "verse 1 ruthless bastards",
+    "type": "skip"
+  },
+  {
+    "key": "verse 1 too poetic grym reaper",
+    "type": "skip"
+  },
+  {
+    "key": "verse 2",
+    "type": "ignore"
+  },
+  {
+    "key": "verse 2 - cappadonna",
+    "type": "performer"
+  },
+  {
+    "key": "verse 2 - gza",
+    "type": "performer"
+  },
+  {
+    "key": "verse 2 - inspectah deck",
+    "type": "performer"
+  },
+  {
+    "key": "verse 2 - masta killa",
+    "type": "performer"
+  },
+  {
+    "key": "verse 2 - masta killa (rza)",
+    "type": "performer"
+  },
+  {
+    "key": "verse 2 - method man",
+    "type": "performer"
+  },
+  {
+    "key": "verse 2 - raekwon",
+    "type": "performer"
+  },
+  {
+    "key": "verse 2 - u-god",
+    "type": "performer"
+  },
+  {
+    "key": "verse 2 az",
+    "type": "skip"
+  },
+  {
+    "key": "verse 2 gza",
+    "type": "performer"
+  },
+  {
+    "key": "verse 2 prince rakeem rzarector",
+    "type": "performer"
+  },
+  {
+    "key": "verse 2 roc marciano",
+    "type": "performer"
+  },
+  {
+    "key": "verse 2 rza",
+    "type": "performer"
+  },
+  {
+    "key": "verse 3",
+    "type": "ignore"
+  },
+  {
+    "key": "verse 3 - cappadonna",
+    "type": "performer"
+  },
+  {
+    "key": "verse 3 - ghostface killah",
+    "type": "performer"
+  },
+  {
+    "key": "verse 3 - gza",
+    "type": "performer"
+  },
+  {
+    "key": "verse 3 - inspectah deck",
+    "type": "performer"
+  },
+  {
+    "key": "verse 3 - method man",
+    "type": "performer"
+  },
+  {
+    "key": "verse 3 - raekwon",
+    "type": "performer"
+  },
+  {
+    "key": "verse 3 - termanology",
+    "type": "skip"
+  },
+  {
+    "key": "verse 3 - u-god",
+    "type": "performer"
+  },
+  {
+    "key": "verse 3 frukwan gatekeeper",
+    "type": "skip"
+  },
+  {
+    "key": "verse 3 killa sin",
+    "type": "skip"
+  },
+  {
+    "key": "verse 3 lil' fame",
+    "type": "skip"
+  },
+  {
+    "key": "verse 3 timbo king",
+    "type": "skip"
+  },
+  {
+    "key": "verse 4",
+    "type": "ignore"
+  },
+  {
+    "key": "verse 4 - cappadonna",
+    "type": "performer"
+  },
+  {
+    "key": "verse 4 - ghostface killah",
+    "type": "performer"
+  },
+  {
+    "key": "verse 4 - gza",
+    "type": "performer"
+  },
+  {
+    "key": "verse 4 - inspectah deck",
+    "type": "performer"
+  },
+  {
+    "key": "verse 4 - masta killa",
+    "type": "performer"
+  },
+  {
+    "key": "verse 4 - method man",
+    "type": "performer"
+  },
+  {
+    "key": "verse 4 - raekwon",
+    "type": "performer"
+  },
+  {
+    "key": "verse 4 - rza",
+    "type": "performer"
+  },
+  {
+    "key": "verse 4 billy danze",
+    "type": "skip"
+  },
+  {
+    "key": "verse 4 dreddy kruger",
+    "type": "skip"
+  },
+  {
+    "key": "verse 5",
+    "type": "ignore"
+  },
+  {
+    "key": "verse 5 - cappadonna",
+    "type": "performer"
+  },
+  {
+    "key": "verse 5 - ghostface killah",
+    "type": "performer"
+  },
+  {
+    "key": "verse 5 - masta killa",
+    "type": "performer"
+  },
+  {
+    "key": "verse 5 - u-god",
+    "type": "performer"
+  },
+  {
+    "key": "verse 6",
+    "type": "ignore"
+  },
+  {
+    "key": "verse 6 - gza",
+    "type": "performer"
+  },
+  {
+    "key": "verse 6 - raekwon",
+    "type": "performer"
+  },
+  {
+    "key": "verse 6 - rza",
+    "type": "performer"
+  },
+  {
+    "key": "verse 7 - masta killa",
+    "type": "performer"
+  },
+  {
+    "key": "verse 7 - rza",
+    "type": "performer"
+  },
+  {
+    "key": "verse five ghostface",
+    "type": "performer"
+  },
+  {
+    "key": "verse five ghostface killah",
+    "type": "performer"
+  },
+  {
+    "key": "verse five masta killa",
+    "type": "performer"
+  },
+  {
+    "key": "verse five prince rakeem rza",
+    "type": "performer"
+  },
+  {
+    "key": "verse five rza",
+    "type": "performer"
+  },
+  {
+    "key": "verse four ghostface killer",
+    "type": "performer"
+  },
+  {
+    "key": "verse four inspectah deck",
+    "type": "performer"
+  },
+  {
+    "key": "verse four master killer, inspector deck",
+    "type": "performer"
+  },
+  {
+    "key": "verse four method man",
+    "type": "performer"
+  },
+  {
+    "key": "verse four method man iron lung",
+    "type": "performer"
+  },
+  {
+    "key": "verse four ol' dirty bastard",
+    "type": "performer"
+  },
+  {
+    "key": "verse four prince rakeem rza",
+    "type": "performer"
+  },
+  {
+    "key": "verse four rza",
+    "type": "performer"
+  },
+  {
+    "key": "verse four the genius gza",
+    "type": "performer"
+  },
+  {
+    "key": "verse one",
+    "type": "ignore"
+  },
+  {
+    "key": "verse one ghostface killah",
+    "type": "performer"
+  },
+  {
+    "key": "verse one inspectah deck rebel ins",
+    "type": "performer"
+  },
+  {
+    "key": "verse one killah priest",
+    "type": "performer"
+  },
+  {
+    "key": "verse one ol dirty bastard",
+    "type": "performer"
+  },
+  {
+    "key": "verse one ol dirty bastard, method man, raekwon the chef",
+    "type": "performer"
+  },
+  {
+    "key": "verse one raekwon the chef",
+    "type": "performer"
+  },
+  {
+    "key": "verse one rza",
+    "type": "performer"
+  },
+  {
+    "key": "verse one street life",
+    "type": "skip"
+  },
+  {
+    "key": "verse one the genius gza",
+    "type": "performer"
+  },
+  {
+    "key": "verse one the rza",
+    "type": "performer"
+  },
+  {
+    "key": "verse one u-god",
+    "type": "performer"
+  },
+  {
+    "key": "verse seven genius gza",
+    "type": "performer"
+  },
+  {
+    "key": "verse six masta killa",
+    "type": "performer"
+  },
+  {
+    "key": "verse six ol dirty bastard",
+    "type": "performer"
+  },
+  {
+    "key": "verse six raekwon the chef",
+    "type": "performer"
+  },
+  {
+    "key": "verse three",
+    "type": "ignore"
+  },
+  {
+    "key": "verse three cappadonna",
+    "type": "performer"
+  },
+  {
+    "key": "verse three ghostface killah",
+    "type": "performer"
+  },
+  {
+    "key": "verse three inspectah deck",
+    "type": "performer"
+  },
+  {
+    "key": "verse three inspector deck",
+    "type": "performer"
+  },
+  {
+    "key": "verse three method man",
+    "type": "performer"
+  },
+  {
+    "key": "verse three ol dirty bastard",
+    "type": "performer"
+  },
+  {
+    "key": "verse three raekwon the chef",
+    "type": "performer"
+  },
+  {
+    "key": "verse three rza",
+    "type": "performer"
+  },
+  {
+    "key": "verse three the genius gza",
+    "type": "performer"
+  },
+  {
+    "key": "verse two",
+    "type": "ignore"
+  },
+  {
+    "key": "verse two cappadonna",
+    "type": "performer"
+  },
+  {
+    "key": "verse two ghostface killah",
+    "type": "performer"
+  },
+  {
+    "key": "verse two ghostface killer",
+    "type": "performer"
+  },
+  {
+    "key": "verse two inspectah deck",
+    "type": "performer"
+  },
+  {
+    "key": "verse two masta killa",
+    "type": "performer"
+  },
+  {
+    "key": "verse two method man",
+    "type": "performer"
+  },
+  {
+    "key": "verse two method man iron lung",
+    "type": "performer"
+  },
+  {
+    "key": "verse two ol dirty bastard",
+    "type": "performer"
+  },
+  {
+    "key": "verse two ol dirty bastard osirus",
+    "type": "performer"
+  },
+  {
+    "key": "verse two raekwon",
+    "type": "performer"
+  },
+  {
+    "key": "verse two raekwon the chef",
+    "type": "performer"
+  },
+  {
+    "key": "verse two the genius gza",
+    "type": "performer"
+  },
+  {
+    "key": "verse two u-god",
+    "type": "performer"
+  },
+  {
+    "key": "violins play on for a while",
+    "type": "skip"
+  },
+  {
+    "key": "vordul mega",
+    "type": "skip"
+  },
+  {
+    "key": "warcloud",
+    "type": "skip"
+  },
+  {
+    "key": "women singing in the background",
+    "type": "skip"
+  },
+  {
+    "key": "women start singing again",
+    "type": "skip"
+  },
+  {
+    "key": "wu-tang movie dialogue",
+    "type": "skip"
+  },
+  {
+    "key": "wu-tang movie samples",
+    "type": "skip"
+  },
+  {
+    "key": "x2",
+    "type": "ignore"
+  },
+  {
+    "key": "x3",
+    "type": "ignore"
+  },
+  {
+    "key": "x5",
+    "type": "ignore"
+  }
+]

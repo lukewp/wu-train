@@ -3,7 +3,7 @@ import tempfile
 import shutil
 import unittest
 
-# from src.split_lyrics_by_performer import ... (import as needed for each step)
+from src.split_lyrics_by_performer import classify_key, IGNORE_SET
 
 def make_test_file(lines):
     tmpdir = tempfile.mkdtemp()
@@ -78,7 +78,7 @@ class TestTrimAndExtractKeyCandidates(unittest.TestCase):
             "rza gza",
             "ghostface rza",
             "meth",
-            "u-god",
+            "u god",
             "inspectah deck masta killa",
             "rza the genius",
             "rza gza odb",
@@ -111,6 +111,23 @@ class TestTrimAndExtractKeyCandidates(unittest.TestCase):
 
 # 3. Identify Performer Keys
 class TestIdentifyPerformerKeys(unittest.TestCase):
+    def test_multi_performer_key_maps_to_all_canonical(self):
+        """Test that a key like 'odb rza' identifies both 'ol' dirty bastard' and 'rza' using the real alias mapping."""
+        import json
+        from src.split_lyrics_by_performer import match_key_to_canonical
+        alias_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../src/performer_aliases.json'))
+        with open(alias_path, 'r', encoding='utf-8') as f:
+            alias_map = json.load(f)
+        # Split the key and map each part
+        key = 'odb rza'
+        parts = key.split()
+        mapped = set()
+        for part in parts:
+            canonical = match_key_to_canonical(part, alias_map)
+            if canonical:
+                mapped.add(canonical)
+        self.assertIn("ol' dirty bastard", mapped)
+        self.assertIn("rza", mapped)
     def test_real_alias_mapping(self):
         """Test that the real performer_aliases.json maps representative aliases to canonical names."""
         import json
@@ -176,18 +193,56 @@ class TestIdentifyPerformerKeys(unittest.TestCase):
         # Should return None for unknown
         self.assertIsNone(match_key_to_canonical("ghostface", alias_map))
 
-# 4. Identify Non-Performer Keys
-class TestIdentifyNonPerformerKeys(unittest.TestCase):
-    """
-    Tests for identifying non-performer (fake/ignore) keys in the lyrics.
-    """
-    def test_detect_fake_keys(self):
-        """Test detection of fake keys (chorus, 2x, etc.)."""
-        self.skipTest("Not implemented: detect fake keys")
 
-    def test_detect_ignore_keys(self):
-        """Test detection of ignore keys ([all], [sample], etc.)."""
-        self.skipTest("Not implemented: detect ignore keys")
+# 4. Classify Keys
+class TestClassifyKeys(unittest.TestCase):
+    """
+    Tests for classifying keys as performer, ignore, or skip, using static sets and the full labeled file.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        import json
+        alias_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../src/performer_aliases.json'))
+        with open(alias_path, 'r', encoding='utf-8') as f:
+            cls.alias_map = json.load(f)
+        # Use IGNORE_SET from src.split_lyrics_by_performer
+        cls.ignore_set = IGNORE_SET
+        # Load labeled keys
+        labeled_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../tests/unique_keys_labeled.json'))
+        with open(labeled_path, 'r', encoding='utf-8') as f:
+            cls.labeled_keys = json.load(f)
+
+    def test_static_classification(self):
+        """Test static examples for each class."""
+        self.assertEqual(classify_key("rza", self.alias_map, self.ignore_set), "performer")
+        self.assertEqual(classify_key("chorus rza", self.alias_map, self.ignore_set), "performer")
+        self.assertEqual(classify_key("chorus", self.alias_map, self.ignore_set), "ignore")
+        self.assertEqual(classify_key("all", self.alias_map, self.ignore_set), "skip")
+        self.assertEqual(classify_key("sample", self.alias_map, self.ignore_set), "skip")
+        self.assertEqual(classify_key("chorus 2x", self.alias_map, self.ignore_set), "ignore")
+        self.assertEqual(classify_key("ghostface killah", self.alias_map, self.ignore_set), "performer")
+        self.assertEqual(classify_key("chorus ghostface killah", self.alias_map, self.ignore_set), "performer")
+        self.assertEqual(classify_key("random label", self.alias_map, self.ignore_set), "skip")
+
+    def test_labeled_file_classification(self):
+        """Test that all keys in unique_keys_labeled.json are classified as expected (ignoring 'unknown')."""
+        mismatches = []
+        for entry in self.labeled_keys:
+            key = entry.get("key")
+            expected = entry.get("type")
+            if expected == "unknown" or key is None:
+                continue
+            actual = classify_key(key, self.alias_map, self.ignore_set)
+            if actual != expected:
+                mismatches.append((key, expected, actual))
+        if mismatches:
+            print("\nMismatches between labeled file and classifier:")
+            for key, expected, actual in mismatches:
+                print(f"  key: {key!r:30} expected: {expected!r:10} actual: {actual!r}")
+            print(f"Total mismatches: {len(mismatches)}")
+        self.assertTrue(len(mismatches) == 0, f"There are {len(mismatches)} mismatches between labeled file and classifier.")
+
 
 # 5. Ignore Sections After Ignore Keys
 class TestIgnoreSectionsAfterIgnoreKeys(unittest.TestCase):
