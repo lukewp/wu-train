@@ -36,9 +36,9 @@ This document outlines the step-by-step process to build the lyrics splitting so
 - [x] Test: `test_output_specific_performer`
 
 ## 8. Refactor and Polish
-- [ ] Refactor code for clarity, maintainability, and efficiency.
-- [ ] Add docstrings and comments.
-- [ ] Ensure all tests pass and code is robust to edge cases.
+- [x] Refactor code for clarity, maintainability, and efficiency.
+- [x] Add docstrings and comments.
+- [x] Ensure all tests pass and code is robust to edge cases.
 
 ---
 

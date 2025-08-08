@@ -1,3 +1,4 @@
+
 # =============================================================================
 # split_lyrics_by_performer.py
 #
@@ -29,6 +30,15 @@ import os
 from typing import List, Dict, Set, Optional
 
 # 2. Constants
+
+# Characters treated as separators and trimmed during key normalization
+DEFAULT_TRIM_CHARS: List[str] = [':']
+
+# Characters replaced with spaces during key normalization
+DEFAULT_REPLACE_WITH_SPACE_CHARS: List[str] = [
+    '&', '/', '+', '-', '(', ')', ','
+]
+
 IGNORE_SET: Set[str] = set([
     "skit", "interlude", "chorus", "bridge", "intro", "outro", "instrumental",
     "crowd", "audience", "refrain", "dj", "mc", "beat", "music", "sound",
@@ -71,9 +81,10 @@ def extract_key_candidates_from_lines(
             whitespace-normalized.
     """
     if trim_chars is None:
-        trim_chars = [':']
+        trim_chars = DEFAULT_TRIM_CHARS
     if replace_with_space_chars is None:
-        replace_with_space_chars = ['&', '/', '+', '-', '(', ')']
+        # Use a subset for extraction (no comma)
+        replace_with_space_chars = DEFAULT_REPLACE_WITH_SPACE_CHARS[:-1]
     key_pattern = re.compile(r'^\[([^\]]+)\]$')
     keys = []
     for line in lines:
@@ -88,6 +99,20 @@ def extract_key_candidates_from_lines(
             )
             keys.append(key)
     return keys
+
+
+# Helper: normalize whitespace (replace multiple spaces with a single space)
+def normalize_whitespace(s: str) -> str:
+    """
+    Replace multiple consecutive whitespace characters in a string with a
+    single space. Ensures consistent spacing for normalization and comparison.
+
+    Args:
+        s (str): Input string to normalize.
+    Returns:
+        str: String with normalized whitespace.
+    """
+    return re.sub(r'\s+', ' ', s)
 
 
 # 4. Domain-Specific Functions
@@ -106,10 +131,11 @@ def match_key_to_canonical(
     Returns:
         str or None: Canonical performer name if found, else None.
     """
-    key_norm = key.strip().lower()
+    key_norm = normalize_key_string(key)
     for canonical, aliases in alias_map.items():
         for alias in aliases:
-            if key_norm == alias.strip().lower():
+            alias_norm = normalize_key_string(alias)
+            if key_norm == alias_norm:
                 return canonical
     return None
 
@@ -129,11 +155,11 @@ def classify_key(
         str: 'performer', 'ignore', or 'skip'.
     """
     key_norm = normalize_key_string(key)
-    # 1. Check for performer alias as whole word
+    # 1. Check for performer alias as whole word (normalized)
     for aliases in alias_map.values():
         for alias in aliases:
-            alias_lc = alias.lower()
-            if f' {alias_lc} ' in f' {key_norm} ':
+            alias_norm = normalize_key_string(alias)
+            if f' {alias_norm} ' in f' {key_norm} ':
                 return 'performer'
 
     # 2. Check for ignore: full-string match first
@@ -156,9 +182,9 @@ def normalize_key_string(
     replace_with_space_chars: Optional[List[str]] = None
 ) -> str:
     if trim_chars is None:
-        trim_chars = [':']
+        trim_chars = DEFAULT_TRIM_CHARS
     if replace_with_space_chars is None:
-        replace_with_space_chars = ['&', '/', '+', '-', '(', ')', ',']
+        replace_with_space_chars = DEFAULT_REPLACE_WITH_SPACE_CHARS
     all_replace = list(set(
         (replace_with_space_chars or []) +
         (trim_chars or [])
@@ -170,12 +196,34 @@ def normalize_key_string(
     # Replace all separators with space
     for c in all_replace:
         key = key.replace(c, ' ')
-    # Iteratively replace double spaces with single space
-    while '  ' in key:
-        key = key.replace('  ', ' ')
-    # Normalize whitespace, lowercase, strip
-    key = ' '.join(key.split()).lower().strip()
+    # Normalize whitespace (multiple spaces to single)
+    key = normalize_whitespace(key)
+    # Lowercase and strip
+    key = key.lower().strip()
     return key
+
+
+# Helper: find all canonical performers matching a normalized key string
+def find_canonical_performers(
+    key_norm: str,
+    alias_map: Dict[str, List[str]]
+) -> Set[str]:
+    """
+    Given a normalized key string and alias map, return all matching canonical
+     performer names. Matches both whole-word aliases and per-part
+     (split by spaces) to maximize robust performer attribution.
+    """
+    performers = set()
+    for canonical, aliases in alias_map.items():
+        for alias in aliases:
+            alias_norm = normalize_key_string(alias)
+            if f' {alias_norm} ' in f' {key_norm} ':
+                performers.add(canonical)
+    for part in key_norm.split():
+        canonical = match_key_to_canonical(part, alias_map)
+        if canonical:
+            performers.add(canonical)
+    return performers
 
 
 # 5. Section Attribution Logic
@@ -209,17 +257,7 @@ def split_lyrics_by_performer(
             key_type = classify_key(key_norm, alias_map, ignore_set)
             # Always reset mode and performers on new key
             if key_type == 'performer':
-                # Map all possible aliases in the key to canonical
-                #   performer names
-                performers = set()
-                for alias in alias_map:
-                    for a in alias_map[alias]:
-                        if f' {a.lower()} ' in f' {key_norm} ':
-                            performers.add(alias)
-                for part in key_norm.split():
-                    canonical = match_key_to_canonical(part, alias_map)
-                    if canonical:
-                        performers.add(canonical)
+                performers = find_canonical_performers(key_norm, alias_map)
                 # If more than one performer, treat as skip
                 if len(performers) > 1:
                     current_mode = 'skip'

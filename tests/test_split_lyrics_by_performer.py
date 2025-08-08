@@ -750,8 +750,35 @@ class TestRefactorAndPolish(unittest.TestCase):
         )
 
     def test_all_tests_pass(self):
-        """Test that all other tests pass (integration check)."""
-        self.skipTest("Not implemented: all tests pass integration")
+        """
+        Integration test: Run all other tests in this module and assert
+         that they pass. This ensures the test suite is passing as a whole.
+        """
+        # Discover all tests in this module except this one
+        loader = unittest.TestLoader()
+        suite = loader.loadTestsFromModule(__import__(__name__))
+
+        # Flatten the suite to get all test cases
+        def flatten_suite(suite):
+            for item in suite:
+                if isinstance(item, unittest.TestSuite):
+                    yield from flatten_suite(item)
+                else:
+                    yield item
+        tests = [t for t in flatten_suite(suite)
+                 if getattr(t,
+                            '_testMethodName',
+                            None
+                            ) != 'test_all_tests_pass']
+        result = unittest.TestResult()
+        for test in tests:
+            test(result)
+        # If there are any failures or errors, fail this test
+        if result.failures or result.errors:
+            msgs = []
+            for test_case, msg in result.failures + result.errors:
+                msgs.append(f"{test_case.id()}: {msg}")
+            self.fail(f"Integration test failed:\n" + '\n'.join(msgs))
 
 
 if __name__ == '__main__':
