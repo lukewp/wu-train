@@ -60,7 +60,7 @@ out/
 *.log
 
 # Dataset artifacts
-wu-tang-clan-lyrics-dataset/*.txt
+wu-tang-clan-lyrics-dataset/**/*
 !wu-tang-clan-lyrics-dataset/wu-tang.txt
 
 # Temporary files

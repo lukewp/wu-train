@@ -344,6 +344,29 @@ if __name__ == "__main__":
     import sys
     from pathlib import Path
 
+    # Help argument handler
+    help_text = f"""
+Usage:
+    python -m src.split_lyrics_by_performer [infile] [outdir] [performer_alias]
+
+Arguments:
+    input_file         Path to lyrics file
+                         (default: wu-tang-clan-lyrics-dataset/wu-tang.txt)
+
+    output_dir         Directory to write performer files (default: out/)
+
+    performer_or_alias (optional) Only output the file for the specified
+                         performer or alias (e.g., rza, bobby digital)
+
+Examples:
+    python -m src.split_lyrics_by_performer
+    python -m src.split_lyrics_by_performer wu-tang.txt out rza
+    python -m src.split_lyrics_by_performer wu-tang.txt out "tony starks"
+"""
+    if any(arg in ("-h", "--help") for arg in sys.argv[1:]):
+        print(help_text)
+        sys.exit(0)
+
     # Default file path
     default_path = (
         Path(__file__).parent.parent /
@@ -363,7 +386,42 @@ if __name__ == "__main__":
         sys.exit(1)
 
     lines = text.splitlines()
-    keys = extract_key_candidates_from_lines(lines)
-    print(f"Extracted {len(keys)} keys:")
-    for k in keys:
-        print(k)
+
+    # Load alias map
+    import json
+    alias_path = Path(__file__).parent / "performer_aliases.json"
+    try:
+        with open(alias_path, 'r', encoding='utf-8') as f:
+            alias_map = json.load(f)
+    except Exception as e:
+        print(f"Error loading alias map: {e}")
+        sys.exit(1)
+
+    # Run performer attribution
+    performer_chunks = split_lyrics_by_performer(lines, alias_map, IGNORE_SET)
+
+    # Output directory (default: 'out')
+    if len(sys.argv) > 2:
+        out_dir = sys.argv[2]
+    else:
+        out_dir = str(Path(__file__).parent.parent / "out")
+
+    # Optional: performer or alias filter
+    if len(sys.argv) > 3:
+        performer_arg = sys.argv[3]
+        canonical = match_key_to_canonical(performer_arg, alias_map)
+        if canonical is None:
+            print(
+                  f"Error: Performer or alias '{performer_arg}' "
+                  "not found in alias map."
+                  )
+            sys.exit(1)
+        filtered_chunks = {canonical: performer_chunks.get(canonical, [])}
+        print(f"Writing file for performer: {canonical} to {out_dir}")
+        write_performer_files(filtered_chunks, out_dir, alias_map=alias_map)
+        print(f"Done. File written: {canonical}.txt")
+    else:
+        print(f"Writing performer files to: {out_dir}")
+        write_performer_files(performer_chunks, out_dir, alias_map=alias_map)
+        print(f"Done. {len([k for k in performer_chunks if k in alias_map])} "
+              "performer files written.")
