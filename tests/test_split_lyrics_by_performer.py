@@ -250,8 +250,128 @@ class TestIgnoreSectionsAfterIgnoreKeys(unittest.TestCase):
     Tests for skipping sections of lyrics after ignore keys until the next valid performer key.
     """
     def test_skip_lines_after_ignore_key(self):
-        """Test skipping all lines after an ignore key until next valid performer key."""
-        self.skipTest("Not implemented: skip lines after ignore key")
+        """
+        Test that lines after an ignore key are skipped until the next performer key.
+        """
+        from src.split_lyrics_by_performer import classify_key, IGNORE_SET
+        # You will implement split_lyrics_by_performer in the main module
+        from src.split_lyrics_by_performer import split_lyrics_by_performer
+
+        # Simulated lyrics
+        lines = [
+            "[rza]",
+            "RZA verse 1",
+            "RZA verse 2",
+            "[chorus]",
+            "Chorus line 1",
+            "Chorus line 2",
+            "[gza]",
+            "GZA verse 1",
+            "[skit]",
+            "Skit line 1",
+            "[method man]",
+            "Meth verse 1",
+            "Meth verse 2"
+        ]
+        # Simulated alias map
+        alias_map = {
+            "rza": ["rza"],
+            "gza": ["gza"],
+            "method man": ["method man", "meth"]
+        }
+
+        # Run the splitter
+        performer_chunks = split_lyrics_by_performer(lines, alias_map, IGNORE_SET)
+
+        # Expected output:
+        # - RZA: ["RZA verse 1", "RZA verse 2"]
+        # - GZA: ["GZA verse 1"]
+        # - Method Man: ["Meth verse 1", "Meth verse 2"]
+        # - Chorus and Skit lines should be ignored
+
+        self.assertEqual(performer_chunks["rza"], ["RZA verse 1", "RZA verse 2"])
+        self.assertEqual(performer_chunks["gza"], ["GZA verse 1"])
+        self.assertEqual(performer_chunks["method man"], ["Meth verse 1", "Meth verse 2"])
+        # Optionally, check that ignored sections are not present
+        for performer in performer_chunks:
+            for line in performer_chunks[performer]:
+                self.assertNotIn("Chorus", line)
+                self.assertNotIn("Skit", line)
+    
+    def test_multi_performer_key_triggers_skip(self):
+        """
+        Test that a key mentioning multiple performers triggers a skip (no attribution).
+        """
+        from src.split_lyrics_by_performer import split_lyrics_by_performer, IGNORE_SET
+    
+        lines = [
+            "[rza]",
+            "RZA verse",
+            "[rza gza]",
+            "Collab verse",
+            "[gza]",
+            "GZA verse"
+        ]
+        alias_map = {
+            "rza": ["rza"],
+            "gza": ["gza"]
+        }
+        performer_chunks = split_lyrics_by_performer(lines, alias_map, IGNORE_SET)
+        self.assertEqual(performer_chunks["rza"], ["RZA verse"])
+        self.assertEqual(performer_chunks["gza"], ["GZA verse"])
+        # "Collab verse" should not be attributed to anyone
+        for performer in performer_chunks:
+            self.assertNotIn("Collab verse", performer_chunks[performer])
+
+    def test_multiple_ignore_keys(self):
+        """
+        Test that multiple ignore keys in sequence skip all lines until next performer key.
+        """
+        from src.split_lyrics_by_performer import split_lyrics_by_performer, IGNORE_SET
+    
+        lines = [
+            "[rza]",
+            "RZA verse",
+            "[chorus]",
+            "Chorus line",
+            "[skit]",
+            "Skit line",
+            "[gza]",
+            "GZA verse"
+        ]
+        alias_map = {
+            "rza": ["rza"],
+            "gza": ["gza"]
+        }
+        performer_chunks = split_lyrics_by_performer(lines, alias_map, IGNORE_SET)
+        self.assertEqual(performer_chunks["rza"], ["RZA verse"])
+        self.assertEqual(performer_chunks["gza"], ["GZA verse"])
+
+
+    def test_skip_key_does_not_attribute(self):
+        """
+        Test that lines after a skip key are not attributed to any performer.
+        """
+        from src.split_lyrics_by_performer import split_lyrics_by_performer, IGNORE_SET
+    
+        lines = [
+            "[rza]",
+            "RZA verse",
+            "[all]",
+            "Group line",
+            "[gza]",
+            "GZA verse"
+        ]
+        alias_map = {
+            "rza": ["rza"],
+            "gza": ["gza"]
+        }
+        performer_chunks = split_lyrics_by_performer(lines, alias_map, IGNORE_SET)
+        self.assertEqual(performer_chunks["rza"], ["RZA verse"])
+        self.assertEqual(performer_chunks["gza"], ["GZA verse"])
+        # "Group line" should not be attributed
+        for performer in performer_chunks:
+            self.assertNotIn("Group line", performer_chunks[performer])
 
 # 6. Output Text Files for Performers
 class TestOutputTextFilesForPerformers(unittest.TestCase):

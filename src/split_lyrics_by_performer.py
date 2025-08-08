@@ -150,7 +150,76 @@ def normalize_key_string(
     return key
 
 
-# 5. File I/O Functions
+# 5. Section Attribution Logic
+def split_lyrics_by_performer(
+    lines: List[str],
+    alias_map: Dict[str, List[str]],
+    ignore_set: Set[str] = IGNORE_SET
+) -> Dict[str, List[str]]:
+    """
+    Process lyrics lines, attributing text chunks to performers and skipping lines after ignore/skip keys.
+    Args:
+        lines: List of lyric lines (including [key] lines).
+        alias_map: Mapping of canonical performer names to aliases.
+        ignore_set: Set of keys to ignore.
+    Returns:
+        Dict of performer name -> list of attributed lines.
+    """
+    performer_chunks: Dict[str, List[str]] = {canonical: [] for canonical in alias_map}
+    current_mode = None  # 'performer', 'ignore', 'skip', or None
+    current_performers = []  # List of canonical performer names
+
+    for line in lines:
+        # Check for [key] line
+        key_match = re.match(r'^\[([^\]]+)\]$', line.strip())
+        if key_match:
+            key_raw = key_match.group(1)
+            key_norm = normalize_key_string(key_raw)
+            key_type = classify_key(key_norm, alias_map, ignore_set)
+            # Always reset mode and performers on new key
+            if key_type == 'performer':
+                # Map all possible aliases in the key to canonical performer names
+                performers = set()
+                for alias in alias_map:
+                    for a in alias_map[alias]:
+                        if f' {a.lower()} ' in f' {key_norm} ':
+                            performers.add(alias)
+                for part in key_norm.split():
+                    canonical = match_key_to_canonical(part, alias_map)
+                    if canonical:
+                        performers.add(canonical)
+                # If more than one performer, treat as skip
+                if len(performers) > 1:
+                    current_mode = 'skip'
+                    current_performers = []
+                elif len(performers) == 1:
+                    current_mode = 'performer'
+                    current_performers = list(performers)
+                else:
+                    current_mode = None
+                    current_performers = []
+            elif key_type == 'ignore':
+                current_mode = 'ignore'
+                current_performers = []
+            elif key_type == 'skip':
+                current_mode = 'skip'
+                current_performers = []
+            else:
+                current_mode = None
+                current_performers = []
+            continue  # Don't attribute key lines themselves
+
+        # Non-key line
+        if current_mode == 'performer' and current_performers:
+            for performer in current_performers:
+                performer_chunks[performer].append(line)
+        # If ignore or skip, do not attribute
+        # If current_mode is None, do not attribute
+
+    return performer_chunks
+
+
+# 6. File I/O Functions
 def load_lyrics_file(filepath: str) -> str:
     """
     Load and return the full contents of the lyrics file as a string.
@@ -169,7 +238,7 @@ def load_lyrics_file(filepath: str) -> str:
         return f.read()
 
 
-# 6. CLI Entry Point
+# 7. CLI Entry Point
 if __name__ == "__main__":
     import sys
     from pathlib import Path

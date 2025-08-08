@@ -18,13 +18,13 @@ This document outlines the step-by-step process to build the lyrics splitting so
 - [X] Test: `test_identify_performer_keys`
 
 ## 4. Identify Non-Performer Keys
-- [ ] Define and detect "fake keys" (e.g., chorus, 2x, etc.) that do not indicate a performer.
-- [ ] Define and detect "ignore keys" (e.g., [all], [sample]) that signal the following section should be skipped.
-- [ ] Test: `test_identify_fake_and_ignore_keys`
+- [x] Define and detect "fake keys" (e.g., chorus, 2x, etc.) that do not indicate a performer.
+- [x] Define and detect "ignore keys" (e.g., [all], [sample]) that signal the following section should be skipped.
+- [x] Test: `test_identify_fake_and_ignore_keys`
 
 ## 5. Ignore Sections After Ignore Keys
-- [ ] Implement logic to skip all lines after an ignore key until the next valid performer key.
-- [ ] Test: `test_ignore_sections_after_ignore_keys`
+- [x] Implement logic to skip all lines after an ignore key until the next valid performer key.
+- [x] Test: `test_ignore_sections_after_ignore_keys`
 
 ## 6. Output Text Files for Performers
 - [ ] For each canonical performer, output a text file containing their lyrics.
