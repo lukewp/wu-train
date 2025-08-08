@@ -9,7 +9,7 @@ This project processes and parses the full lyrics of the Wu-Tang Clan and affili
 - **Ignore Logic:** Filters out non-performer and structural labels (e.g., `[chorus]`, `[2x]`, `[all]`) using a comprehensive ignore set.
 - **Test-Driven Development:** Comprehensive test suite covering all major features, including integration and PEP-8 compliance checks.
 - **DRY & Documented Code:** Modular, DRY Python code with type hints and clear documentation throughout.
-- **CLI Usage:** Run the main script directly or via CLI, with options for input file, output directory, performer selection, and export format (`--openai` or `--hf`).
+- **CLI Usage:** Run the main script directly or via CLI, with options for input file, output directory, and performer selection.
 - **Extensible:** Easily add new performers/aliases or update ignore logic by editing the relevant JSON/config files.
 
 **Dataset Handling:**
@@ -22,19 +22,18 @@ This project processes and parses the full lyrics of the Wu-Tang Clan and affili
 
 ## JSONL Output for LLM Fine-Tuning
 
-You can export each performer's lyrics in multiple JSONL formats for downstream fine-tuning:
+You can export each performer's lyrics as JSONL files for LLM fine-tuning. Use `--openai` for OpenAI chat-format files or `--hf` for Hugging Face prompt/completion pairs.
 
-- **OpenAI chat format** via `--openai`
-- **HuggingFace prompt/completion format** via `--hf`
-
-### OpenAI Chat Format
-
-Each line in the JSONL file is a single training example with a `messages` array, including a system prompt, user prompt (a lyric line), and assistant completion (the next lyric line). The system prompt is personalized for each performer.
-
-**To generate JSONL files:**
+**To generate OpenAI JSONL files:**
 
 ```bash
 python -m src.split_lyrics_by_performer --openai
+```
+
+**To generate Hugging Face JSONL files:**
+
+```bash
+python -m src.split_lyrics_by_performer --hf
 ```
 
 **To generate JSONL for a specific performer:**
@@ -43,7 +42,7 @@ python -m src.split_lyrics_by_performer --openai
 python -m src.split_lyrics_by_performer wu-tang-clan-lyrics-dataset/wu-tang.txt out rza --openai
 ```
 
-**JSONL Format Example:**
+**OpenAI JSONL Format Example:**
 
 ```json
 {"messages": [
@@ -56,40 +55,10 @@ python -m src.split_lyrics_by_performer wu-tang-clan-lyrics-dataset/wu-tang.txt 
 **To concatenate all JSONL files into one:**
 
 ```bash
-cat out/*.openai.jsonl > out/all_performers.openai.jsonl
+cat out/*.jsonl > out/all_performers.jsonl
 ```
 
-This produces a single file with one training example per line, suitable for OpenAI fine-tuning.
-
-### HuggingFace Prompt/Completion Format
-
-Each example contains a `prompt` and `completion` field, suitable for the HuggingFace fine-tuning tools.
-
-**To generate HuggingFace JSONL files:**
-
-```bash
-python -m src.split_lyrics_by_performer --hf
-```
-
-**To generate HuggingFace JSONL for a specific performer:**
-
-```bash
-python -m src.split_lyrics_by_performer wu-tang-clan-lyrics-dataset/wu-tang.txt out rza --hf
-```
-
-**HuggingFace Format Example:**
-
-```json
-{"prompt": "yo, you may catch me in a pair of polo skipperys, matching cap", "completion": "razor blades in my gums (bobby!)"}
-```
-
-**To concatenate all HuggingFace JSONL files into one:**
-
-```bash
-cat out/*.hf.jsonl > out/all_performers.hf.jsonl
-```
-
-This produces a single file with one prompt/completion pair per line, suitable for HuggingFace fine-tuning.
+This produces a single file with one training example per line.
 
 ---
 
@@ -121,19 +90,13 @@ Output only Ghostface's lyrics (using an alias):
 python -m src.split_lyrics_by_performer wu-tang-clan-lyrics-dataset/wu-tang.txt out tony starks
 ```
 
-Export HuggingFace JSONL for all performers:
-```bash
-python -m src.split_lyrics_by_performer --hf
-```
-
 
 ## Features
 - Parses raw lyrics labeled by performer (e.g., `[raekwon]`, `[meth]`, etc.)
 - Canonicalizes performer names and handles aliases
 - Filters out non-performer and structural labels (e.g., `[chorus]`, `[2x]`, `[all]`)
 - Concatenates and saves all lyrics for each performer into separate files in `out/`
-- Exports each performer's lyrics as OpenAI chat-format JSONL for LLM fine-tuning (`--openai`)
-- Exports each performer's lyrics as HuggingFace prompt/completion JSONL for LLM fine-tuning (`--hf`)
+- Exports each performer's lyrics as JSONL for LLM fine-tuning (`--openai` or `--hf`)
 - Allows output for all performers or a specific performer
 - Prepares data for LLM fine-tuning or analysis
 - Includes a reproducible Python development environment via devcontainer
@@ -153,8 +116,7 @@ python -m src.split_lyrics_by_performer --hf
 3. For interactive exploration, open `interactive_lyrics_lookup.ipynb` and enter a performer or alias to view their lyrics directly in the notebook.
 4. To process and split the lyrics by performer via script:
    - Run `python -m src.split_lyrics_by_performer` (see script help for options)
-   - Add `--openai` to export OpenAI chat-format JSONL for each performer
-   - Add `--hf` to export HuggingFace prompt/completion JSONL for each performer
+   - Add `--openai` or `--hf` to export JSONL for each performer
 5. Use the generated files in `out/` for LLM fine-tuning or further NLP tasks
 
 ### Example Output
@@ -188,7 +150,7 @@ strong as the base of a mountain, there's no counting
 how many mc's, have sprung from our fountain
 ```
 
-and `out/rza.openai.jsonl` (if --openai is used in the CLI):
+and `out/rza.jsonl` (if `--openai` or `--hf` is used in the CLI):
 ```json
 {"messages": [{"role": "system", "content": "You are Wu-Tang Clan member rza. When a user prompts you with one of your lyrics, you deliver the next line."}, {"role": "user", "content": "yo, you may catch me in a pair of polo skipperys, matching cap"}, {"role": "assistant", "content": "razor blades in my gums (bobby!)"}]}
 {"messages": [{"role": "system", "content": "You are Wu-Tang Clan member rza. When a user prompts you with one of your lyrics, you deliver the next line."}, {"role": "user", "content": "razor blades in my gums (bobby!)"}, {"role": "assistant", "content": "you may catch me in yellow havana joe's goose jumper"}]}
@@ -232,7 +194,7 @@ steamrolling niggas like a eighteen wheeler
 with the drunk driver driving, there's no surviving
 ```
 
-and `out/inspectah_deck.openai.jsonl` (if --openai is used in the CLI):
+and `out/inspectah_deck.jsonl` (if `--openai` or `--hf` is used in the CLI):
 ```json
 {"messages": [{"role": "system", "content": "You are Wu-Tang Clan member inspectah deck. When a user prompts you with one of your lyrics, you deliver the next line."}, {"role": "user", "content": "well i'm a sire, i set the microphone on fire"}, {"role": "assistant", "content": "rap styles vary, and carry like mariah"}]}
 {"messages": [{"role": "system", "content": "You are Wu-Tang Clan member inspectah deck. When a user prompts you with one of your lyrics, you deliver the next line."}, {"role": "user", "content": "rap styles vary, and carry like mariah"}, {"role": "assistant", "content": "i come from the shaolin slum, and the isle i'm from"}]}
