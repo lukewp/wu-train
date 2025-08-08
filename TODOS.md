@@ -32,8 +32,8 @@ This document outlines the step-by-step process to build the lyrics splitting so
 - [x] Test: `test_output_all_performer_files`
 
 ## 7. Output for a Specific Performer
-- [ ] Allow user to specify a performer (by canonical name or alias) and output only that performer's lyrics.
-- [ ] Test: `test_output_specific_performer`
+- [x] Allow user to specify a performer (by canonical name or alias) and output only that performer's lyrics.
+- [x] Test: `test_output_specific_performer`
 
 ## 8. Refactor and Polish
 - [ ] Refactor code for clarity, maintainability, and efficiency.

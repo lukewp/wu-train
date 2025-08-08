@@ -440,9 +440,115 @@ class TestOutputForSpecificPerformer(unittest.TestCase):
     """
     Tests for outputting text files for a specific performer or alias.
     """
-    def test_output_for_specified_performer(self):
-        """Test output for a specified performer (canonical or alias)."""
-        self.skipTest("Not implemented: output for specified performer")
+    def setUp(self):
+        # Minimal alias map and performer_chunks for testing
+        self.alias_map = {
+            "rza": ["rza", "bobby digital"],
+            "gza": ["gza", "the genius"],
+            "method man": ["method man", "meth"]
+        }
+        self.performer_chunks = {
+            "rza": ["RZA verse 1", "RZA verse 2"],
+            "gza": ["GZA verse 1"],
+            "method man": []
+        }
+
+    def test_output_for_canonical_performer(self):
+        """Test output for a canonical performer name."""
+        import tempfile, os, shutil
+        from src.split_lyrics_by_performer import write_performer_files
+        out_dir = tempfile.mkdtemp()
+        try:
+            # Only output for 'rza'
+            write_performer_files({"rza": self.performer_chunks["rza"]}, out_dir, alias_map=self.alias_map)
+            out_path = os.path.join(out_dir, "rza.txt")
+            self.assertTrue(os.path.exists(out_path))
+            with open(out_path, "r", encoding="utf-8") as f:
+                contents = f.read().splitlines()
+            self.assertEqual(contents, self.performer_chunks["rza"])
+            # Only one file should be present
+            self.assertEqual(set(os.listdir(out_dir)), {"rza.txt"})
+        finally:
+            shutil.rmtree(out_dir)
+
+    def test_output_for_alias(self):
+        """Test output for a performer specified by alias."""
+        import tempfile, os, shutil
+        from src.split_lyrics_by_performer import write_performer_files, match_key_to_canonical
+        out_dir = tempfile.mkdtemp()
+        try:
+            # Use alias 'bobby digital' to get canonical 'rza'
+            canonical = match_key_to_canonical("bobby digital", self.alias_map)
+            self.assertEqual(canonical, "rza")
+            write_performer_files({canonical: self.performer_chunks[canonical]}, out_dir, alias_map=self.alias_map)
+            out_path = os.path.join(out_dir, "rza.txt")
+            self.assertTrue(os.path.exists(out_path))
+            with open(out_path, "r", encoding="utf-8") as f:
+                contents = f.read().splitlines()
+            self.assertEqual(contents, self.performer_chunks["rza"])
+        finally:
+            shutil.rmtree(out_dir)
+
+    def test_unknown_performer_raises(self):
+        """Test that specifying an unknown performer raises an error or does not write a file."""
+        import tempfile, os, shutil
+        from src.split_lyrics_by_performer import write_performer_files
+        out_dir = tempfile.mkdtemp()
+        try:
+            # Try to write for unknown performer
+            write_performer_files({"ghostface": ["Ghost verse"]}, out_dir, alias_map=self.alias_map)
+            # No file should be created
+            self.assertNotIn("ghostface.txt", os.listdir(out_dir))
+        finally:
+            shutil.rmtree(out_dir)
+
+    def test_empty_output(self):
+        """Test that a performer with no lyrics creates an empty file or as per design."""
+        import tempfile, os, shutil
+        from src.split_lyrics_by_performer import write_performer_files
+        out_dir = tempfile.mkdtemp()
+        try:
+            write_performer_files({"method man": []}, out_dir, alias_map=self.alias_map)
+            out_path = os.path.join(out_dir, "method_man.txt")
+            self.assertTrue(os.path.exists(out_path))
+            with open(out_path, "r", encoding="utf-8") as f:
+                contents = f.read().splitlines()
+            self.assertEqual(contents, [])
+        finally:
+            shutil.rmtree(out_dir)
+
+    def test_case_insensitivity(self):
+        """Test that performer/alias lookup is case-insensitive."""
+        import tempfile, os, shutil
+        from src.split_lyrics_by_performer import write_performer_files, match_key_to_canonical
+        out_dir = tempfile.mkdtemp()
+        try:
+            canonical = match_key_to_canonical("RZA", self.alias_map)
+            if canonical is None:
+                self.fail("Canonical performer not found for 'RZA'")
+            self.assertEqual(canonical, "rza")
+            canonical2 = match_key_to_canonical("BoBbY DiGiTaL", self.alias_map)
+            if canonical2 is None:
+                self.fail("Canonical performer not found for 'BoBbY DiGiTaL'")
+            self.assertEqual(canonical2, "rza")
+            write_performer_files({canonical: self.performer_chunks[canonical]}, out_dir, alias_map=self.alias_map)
+            self.assertTrue(os.path.exists(os.path.join(out_dir, "rza.txt")))
+        finally:
+            shutil.rmtree(out_dir)
+
+    def test_output_directory_created(self):
+        """Test that a non-existent output directory is created."""
+        import tempfile, os, shutil
+        from src.split_lyrics_by_performer import write_performer_files
+        tmpdir = tempfile.mkdtemp()
+        out_dir = os.path.join(tmpdir, "new_out_dir")
+        try:
+            self.assertFalse(os.path.exists(out_dir))
+            write_performer_files({"rza": self.performer_chunks["rza"]}, out_dir, alias_map=self.alias_map)
+            self.assertTrue(os.path.exists(out_dir))
+            self.assertTrue(os.path.exists(os.path.join(out_dir, "rza.txt")))
+        finally:
+            shutil.rmtree(tmpdir)
 
 # 8. Refactor and Polish
 class TestRefactorAndPolish(unittest.TestCase):
