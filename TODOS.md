@@ -27,9 +27,9 @@ This document outlines the step-by-step process to build the lyrics splitting so
 - [x] Test: `test_ignore_sections_after_ignore_keys`
 
 ## 6. Output Text Files for Performers
-- [ ] For each canonical performer, output a text file containing their lyrics.
-- [ ] Ensure only valid performer keys (from the alias mapping) are used for output.
-- [ ] Test: `test_output_all_performer_files`
+- [x] For each canonical performer, output a text file containing their lyrics.
+- [x] Ensure only valid performer keys (from the alias mapping) are used for output.
+- [x] Test: `test_output_all_performer_files`
 
 ## 7. Output for a Specific Performer
 - [ ] Allow user to specify a performer (by canonical name or alias) and output only that performer's lyrics.
