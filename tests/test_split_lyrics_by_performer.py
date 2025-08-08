@@ -614,6 +614,8 @@ class TestOutputForSpecificPerformer(unittest.TestCase):
         """Test output for a performer specified by alias."""
         with tempdir() as out_dir:
             canonical = match_key_to_canonical("bobby digital", self.alias_map)
+            if canonical is None:
+                self.fail("Canonical performer not found for 'bobby digital'")
             self.assertEqual(canonical, "rza")
             write_performer_files(
                 {canonical: self.performer_chunks[canonical]},
