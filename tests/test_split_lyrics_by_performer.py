@@ -601,70 +601,183 @@ class TestJsonlPromptCompletionPairs(unittest.TestCase):
 
     def test_jsonl_pairs_respect_verse_breaks(self):
         """
-        Test that JSONL prompt/completion pairs are split at verse breaks
-          (empty lines).
+        Test that JSONL chat-format pairs are split at verse breaks
+         (empty lines).
         """
-        # Import the function to test (assume it will be called
-        #   split_lines_to_jsonl_pairs)
-        pairs = split_lines_to_jsonl_pairs(self.deck_lyrics)
+        performer = "inspectah deck"
+        pairs = split_lines_to_jsonl_pairs(self.deck_lyrics, performer)
 
-        # Expected pairs based on the example
         expected = [
             {
-                "prompt":
-                "ladies and gentlemen, we'd like to welcome to you ++++",
-                "completion":
-                " all the way from the slums of shaolin ####"
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": (
+                            "You are Wu-Tang Clan member inspectah deck. "
+                            "When a user prompts you with one of your lyrics, "
+                            "you deliver the next line."
+                        ),
+                    },
+                    {
+                        "role": "user",
+                        "content": (
+                            "ladies and gentlemen, we'd like to welcome to you"
+                        ),
+                    },
+                    {
+                        "role": "assistant",
+                        "content": "all the way from the slums of shaolin",
+                    },
+                ]
             },
             {
-                "prompt":
-                "all the way from the slums of shaolin ++++",
-                "completion":
-                " special uninvited guests ####"
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": (
+                            "You are Wu-Tang Clan member inspectah deck. "
+                            "When a user prompts you with one of your lyrics, "
+                            "you deliver the next line."
+                        ),
+                    },
+                    {
+                        "role": "user",
+                        "content": "all the way from the slums of shaolin",
+                    },
+                    {
+                        "role": "assistant",
+                        "content": "special uninvited guests",
+                    },
+                ]
             },
             {
-                "prompt":
-                "special uninvited guests ++++",
-                "completion":
-                " came in through the back door ####"
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": (
+                            "You are Wu-Tang Clan member inspectah deck. "
+                            "When a user prompts you with one of your lyrics, "
+                            "you deliver the next line."
+                        ),
+                    },
+                    {
+                        "role": "user",
+                        "content": "special uninvited guests",
+                    },
+                    {
+                        "role": "assistant",
+                        "content": "came in through the back door",
+                    },
+                ]
             },
             {
-                "prompt":
-                "came in through the back door ++++",
-                "completion":
-                " ladies and gentlemen, it's them! ####"
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": (
+                            "You are Wu-Tang Clan member inspectah deck. "
+                            "When a user prompts you with one of your lyrics, "
+                            "you deliver the next line."
+                        ),
+                    },
+                    {
+                        "role": "user",
+                        "content": "came in through the back door"
+                    },
+                    {
+                        "role": "assistant",
+                        "content": "ladies and gentlemen, it's them!"
+                    },
+                ]
             },
             {
-                "prompt":
-                "dance with the mantis, note the slim chances ++++",
-                "completion":
-                " chant this, anthem swing like pete sampras ####"
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": (
+                            "You are Wu-Tang Clan member inspectah deck. "
+                            "When a user prompts you with one of your lyrics, "
+                            "you deliver the next line."
+                        ),
+                    },
+                    {
+                        "role": "user",
+                        "content": "dance with the mantis, note the slim "
+                        "chances"
+                    },
+                    {
+                        "role": "assistant",
+                        "content": "chant this, anthem swing like pete sampras"
+                    },
+                ]
             },
             {
-                "prompt":
-                "chant this, anthem swing like pete sampras ++++",
-                "completion":
-                " takin it straight to big man on campus ####"
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": (
+                            "You are Wu-Tang Clan member inspectah deck. "
+                            "When a user prompts you with one of your lyrics, "
+                            "you deliver the next line."
+                        ),
+                    },
+                    {
+                        "role": "user",
+                        "content": "chant this, anthem swing like pete sampras"
+                    },
+                    {
+                        "role": "assistant",
+                        "content": "takin it straight to big man on campus"
+                    },
+                ]
             },
             {
-                "prompt":
-                "takin it straight to big man on campus ++++",
-                "completion":
-                " brandish your weapon or get dropped to the canvas ####"
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": (
+                            "You are Wu-Tang Clan member inspectah deck. "
+                            "When a user prompts you with one of your lyrics, "
+                            "you deliver the next line."
+                        ),
+                    },
+                    {
+                        "role": "user",
+                        "content": "takin it straight to big man on campus"
+                    },
+                    {
+                        "role": "assistant",
+                        "content": (
+                            "brandish your weapon or get dropped to the canvas"
+                        ),
+                    },
+                ]
             },
             {
-                "prompt":
-                "brandish your weapon or get dropped to the canvas ++++",
-                "completion":
-                " scandalous, made the metro panic ####"
-            }
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": (
+                            "You are Wu-Tang Clan member inspectah deck. "
+                            "When a user prompts you with one of your lyrics, "
+                            "you deliver the next line."
+                        ),
+                    },
+                    {
+                        "role": "user",
+                        "content": (
+                            "brandish your weapon or get dropped to the canvas"
+                        ),
+                    },
+                    {
+                        "role": "assistant",
+                        "content": "scandalous, made the metro panic",
+                    },
+                ]
+            },
         ]
 
-        # Only check the first three pairs for this example
-        self.assertGreaterEqual(len(pairs), 3)
-        for i in range(3):
-            self.assertEqual(pairs[i]["prompt"], expected[i]["prompt"])
-            self.assertEqual(pairs[i]["completion"], expected[i]["completion"])
+        self.assertEqual(pairs, expected)
 
 
 # 7. Output for a Specific Performer

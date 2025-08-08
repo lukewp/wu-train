@@ -306,42 +306,55 @@ def split_lyrics_by_performer(
 # Helper: split lines into JSONL prompt/completion pairs based on verse breaks
 def split_lines_to_jsonl_pairs(
     lines: List[str],
+    performer: str,
     prompt_sep: str = " ++++",
     completion_stop: str = " ####"
-) -> List[Dict[str, str]]:
+) -> List[Dict[str, list]]:
     """
-    Given a list of lyric lines, split into prompt/completion pairs for
-     LLM fine-tuning. Each prompt is a line, and the completion is the next
-     line, with verse breaks (empty lines) resetting the pairing. Only pairs
-     that do not cross verse breaks are included.
+    Given a list of lyric lines, split into OpenAI chat-format JSONL dicts for
+     LLM fine-tuning. Each dict has a 'messages' key with system, user, and
+     assistant roles. Each prompt is a line, and the completion is the next
+     line, with verse breaks (empty lines) resetting the pairing.
     Args:
         lines: List of lyric lines (may include empty lines for verse breaks).
+        performer: Name of the performer for the system prompt.
         prompt_sep: String to append to the prompt (default: ' ++++').
         completion_stop: String to append to the completion (default: ' ####').
     Returns:
-        List of dicts with 'prompt' and 'completion' keys.
+        List of dicts with 'messages' key (OpenAI chat format).
     """
-    pairs = []
-    # Split into blocks (verses) separated by empty lines
+    chat_pairs = []
+    system_message = {"role": "system",
+                      "content": f"You are Wu-Tang Clan member {performer}"
+                      ". When a user prompts you with one of your lyrics, "
+                      "you deliver the next line."}
     block = []
     for line in lines:
         if line.strip() == '':
             if block:
-                # Pair every consecutive line in the block
                 for i in range(len(block) - 1):
-                    prompt = block[i].strip() + prompt_sep
-                    completion = ' ' + block[i+1].strip() + completion_stop
-                    pairs.append({"prompt": prompt, "completion": completion})
+                    user_msg = block[i].strip()
+                    assistant_msg = block[i+1].strip()
+                    messages = [
+                        system_message,
+                        {"role": "user", "content": user_msg},
+                        {"role": "assistant", "content": assistant_msg}
+                    ]
+                    chat_pairs.append({"messages": messages})
                 block = []
         else:
             block.append(line)
-    # Process any trailing block
     if block:
         for i in range(len(block) - 1):
-            prompt = block[i].strip() + prompt_sep
-            completion = ' ' + block[i+1].strip() + completion_stop
-            pairs.append({"prompt": prompt, "completion": completion})
-    return pairs
+            user_msg = block[i].strip()
+            assistant_msg = block[i+1].strip()
+            messages = [
+                system_message,
+                {"role": "user", "content": user_msg},
+                {"role": "assistant", "content": assistant_msg}
+            ]
+            chat_pairs.append({"messages": messages})
+    return chat_pairs
 
 
 # 6. Output Functions
@@ -408,13 +421,14 @@ def write_performer_jsonl(
             for c in performer
         ).replace(' ', '_')
         out_path = os.path.join(out_dir, f"{safe_name}.jsonl")
-        pairs = split_lines_to_jsonl_pairs(
+        chat_pairs = split_lines_to_jsonl_pairs(
             lines,
+            performer,
             prompt_sep=prompt_sep,
             completion_stop=completion_stop
         )
         with open(out_path, "w", encoding="utf-8") as f:
-            for obj in pairs:
+            for obj in chat_pairs:
                 f.write(json.dumps(obj, ensure_ascii=False) + "\n")
 
 
