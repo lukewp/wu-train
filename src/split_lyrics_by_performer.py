@@ -31,8 +31,10 @@ __all__ = [
     'find_canonical_performers',
     'split_lyrics_by_performer',
     'write_performer_files',
-    'write_performer_jsonl',
-    'split_lines_to_jsonl_pairs',
+    'write_performer_openai_jsonl',
+    'split_lines_to_openai_pairs',
+    'split_lines_to_hf_pairs',
+    'write_performer_hf_jsonl',
     'load_lyrics_file',
     'IGNORE_SET',
 ]
@@ -303,8 +305,9 @@ def split_lyrics_by_performer(
     return performer_chunks
 
 
-# Helper: split lines into JSONL prompt/completion pairs based on verse breaks
-def split_lines_to_jsonl_pairs(
+# Helper: split lines into OpenAI JSONL prompt/completion pairs
+# based on verse breaks
+def split_lines_to_openai_pairs(
     lines: List[str],
     performer: str,
     prompt_sep: str = " ++++",
@@ -312,9 +315,9 @@ def split_lines_to_jsonl_pairs(
 ) -> List[Dict[str, list]]:
     """
     Given a list of lyric lines, split into OpenAI chat-format JSONL dicts for
-     LLM fine-tuning. Each dict has a 'messages' key with system, user, and
-     assistant roles. Each prompt is a line, and the completion is the next
-     line, with verse breaks (empty lines) resetting the pairing.
+    LLM fine-tuning. Each dict has a 'messages' key with system, user, and
+    assistant roles. Each prompt is a line, and the completion is the next
+    line, with verse breaks (empty lines) resetting the pairing.
     Args:
         lines: List of lyric lines (may include empty lines for verse breaks).
         performer: Name of the performer for the system prompt.
@@ -324,10 +327,14 @@ def split_lines_to_jsonl_pairs(
         List of dicts with 'messages' key (OpenAI chat format).
     """
     chat_pairs = []
-    system_message = {"role": "system",
-                      "content": f"You are Wu-Tang Clan member {performer}"
-                      ". When a user prompts you with one of your lyrics, "
-                      "you deliver the next line."}
+    system_message = {
+        "role": "system",
+        "content": (
+            f"You are Wu-Tang Clan member {performer}. "
+            "When a user prompts you with one of your lyrics, "
+            "you deliver the next line."
+        ),
+    }
     block = []
     for line in lines:
         if line.strip() == '':
@@ -355,6 +362,33 @@ def split_lines_to_jsonl_pairs(
             ]
             chat_pairs.append({"messages": messages})
     return chat_pairs
+
+
+def split_lines_to_hf_pairs(
+    lines: List[str],
+    performer: str,
+) -> List[Dict[str, str]]:
+    """Split lines into HuggingFace-style prompt/completion dicts."""
+    pairs: List[Dict[str, str]] = []
+    block: List[str] = []
+    for line in lines:
+        if line.strip() == "":
+            if block:
+                for i in range(len(block) - 1):
+                    pairs.append({
+                        "prompt": block[i].strip(),
+                        "completion": block[i + 1].strip(),
+                    })
+                block = []
+        else:
+            block.append(line)
+    if block:
+        for i in range(len(block) - 1):
+            pairs.append({
+                "prompt": block[i].strip(),
+                "completion": block[i + 1].strip(),
+            })
+    return pairs
 
 
 # 6. Output Functions
@@ -389,25 +423,24 @@ def write_performer_files(
                 f.write(line + "\n")
 
 
-def write_performer_jsonl(
+def write_performer_openai_jsonl(
     performer_chunks: Dict[str, List[str]],
     out_dir: str,
     alias_map: Optional[Dict[str, List[str]]] = None,
     prompt_sep: str = " ++++",
     completion_stop: str = " ####"
 ) -> None:
-    """
-    Write each performer's lyrics as JSONL prompt/completion pairs for LLM
-     fine-tuning. Each prompt is a verse (split by double newlines), and the
-     completion is the next verse.
+    """Write each performer's lyrics as OpenAI chat-format JSONL.
+
+    Each prompt is a line (reset at blank lines), and the completion is the
+    subsequent line.
+
     Args:
-        performer_chunks:   Dict of performer name -> list of lines.
-        out_dir:            Output directory path.
-        alias_map:          Optional dict of canonical performer
-                              names -> aliases.
-        prompt_sep:         Separator to end the prompt (default: ' ++++').
-        completion_stop:    Stop sequence to end the completion
-                              (default: ' ####').
+        performer_chunks: Dict of performer name -> list of lines.
+        out_dir: Output directory path.
+        alias_map: Optional dict of canonical performer names -> aliases.
+        prompt_sep: Separator appended to the prompt.
+        completion_stop: Stop sequence appended to the completion.
     """
     os.makedirs(out_dir, exist_ok=True)
     valid_performers = set(performer_chunks.keys())
@@ -420,15 +453,39 @@ def write_performer_jsonl(
             c if c.isalnum() or c in (' ', '_') else '_'
             for c in performer
         ).replace(' ', '_')
-        out_path = os.path.join(out_dir, f"{safe_name}.jsonl")
-        chat_pairs = split_lines_to_jsonl_pairs(
+        out_path = os.path.join(out_dir, f"{safe_name}.openai.jsonl")
+        chat_pairs = split_lines_to_openai_pairs(
             lines,
             performer,
             prompt_sep=prompt_sep,
-            completion_stop=completion_stop
+            completion_stop=completion_stop,
         )
         with open(out_path, "w", encoding="utf-8") as f:
             for obj in chat_pairs:
+                f.write(json.dumps(obj, ensure_ascii=False) + "\n")
+
+
+def write_performer_hf_jsonl(
+    performer_chunks: Dict[str, List[str]],
+    out_dir: str,
+    alias_map: Optional[Dict[str, List[str]]] = None,
+) -> None:
+    """Write HuggingFace-style prompt/completion JSONL files."""
+    os.makedirs(out_dir, exist_ok=True)
+    valid_performers = set(performer_chunks.keys())
+    if alias_map is not None:
+        valid_performers = set(alias_map.keys())
+    for performer, lines in performer_chunks.items():
+        if alias_map is not None and performer not in valid_performers:
+            continue
+        safe_name = ''.join(
+            c if c.isalnum() or c in (' ', '_') else '_'
+            for c in performer
+        ).replace(' ', '_')
+        out_path = os.path.join(out_dir, f"{safe_name}.hf.jsonl")
+        pairs = split_lines_to_hf_pairs(lines, performer)
+        with open(out_path, "w", encoding="utf-8") as f:
+            for obj in pairs:
                 f.write(json.dumps(obj, ensure_ascii=False) + "\n")
 
 
@@ -457,8 +514,10 @@ if __name__ == "__main__":
 
     help_text = f"""
 Usage:
-    python -m src.split_lyrics_by_performer [input_file] [output_dir]
-                                            [performer_or_alias] [--jsonl]
+    python -m src.split_lyrics_by_performer [input_file]
+                                            [output_dir]
+                                            [performer_or_alias]
+                                            [--openai | --hf]
 
 Arguments:
     input_file         Path to lyrics file
@@ -469,15 +528,19 @@ Arguments:
     performer_or_alias (optional) Only output the file for the specified
                          performer or alias (e.g., rza, ghost, raekwon)
 
-    --jsonl            (optional) Export as JSONL prompt/completion pairs for
-                         LLM fine-tuning
+    --openai          (optional) Export OpenAI-style JSONL prompt/completion
+                         pairs for LLM fine-tuning
+    --hf               (optional) Export HuggingFace JSONL prompt/completion
+                         pairs
 
 Examples:
     python -m src.split_lyrics_by_performer
     python -m src.split_lyrics_by_performer wu-tang.txt out rza
     python -m src.split_lyrics_by_performer wu-tang.txt out "tony starks"
-    python -m src.split_lyrics_by_performer wu-tang.txt out --jsonl
-    python -m src.split_lyrics_by_performer wu-tang.txt out rza --jsonl
+    python -m src.split_lyrics_by_performer wu-tang.txt out --openai
+    python -m src.split_lyrics_by_performer wu-tang.txt out --hf
+    python -m src.split_lyrics_by_performer wu-tang.txt out rza --openai
+    python -m src.split_lyrics_by_performer wu-tang.txt out rza --hf
 """
     if any(arg in ("-h", "--help") for arg in sys.argv[1:]):
         print(help_text)
@@ -521,8 +584,12 @@ Examples:
     else:
         out_dir = str(Path(__file__).parent.parent / "out")
 
-    # Check for --jsonl option
-    jsonl_mode = any(arg == "--jsonl" for arg in sys.argv[1:])
+    # Check for output format options
+    openai_mode = any(arg == "--openai" for arg in sys.argv[1:])
+    hf_mode = any(arg == "--hf" for arg in sys.argv[1:])
+    if openai_mode and hf_mode:
+        print("Error: --openai and --hf cannot be used together.")
+        sys.exit(1)
 
     # Optional: performer or alias filter
     performer_arg = None
@@ -536,13 +603,24 @@ Examples:
                   f"not found in alias map.")
             sys.exit(1)
         filtered_chunks = {canonical: performer_chunks.get(canonical, [])}
-        if jsonl_mode:
-            print(f"Writing JSONL file for performer: {canonical} "
-                  f"to {out_dir}")
-            write_performer_jsonl(filtered_chunks,
-                                  out_dir,
-                                  alias_map=alias_map)
-            print(f"Done. File written: {canonical}.jsonl")
+        if openai_mode:
+            print(
+                f"Writing OpenAI JSONL file for performer: {canonical} "
+                f"to {out_dir}"
+            )
+            write_performer_openai_jsonl(
+                filtered_chunks, out_dir, alias_map=alias_map
+            )
+            print(f"Done. File written: {canonical}.openai.jsonl")
+        elif hf_mode:
+            print(
+                "Writing HuggingFace JSONL file for performer: "
+                f"{canonical} to {out_dir}"
+            )
+            write_performer_hf_jsonl(
+                filtered_chunks, out_dir, alias_map=alias_map
+            )
+            print(f"Done. File written: {canonical}.hf.jsonl")
         else:
             print(f"Writing file for performer: {canonical} to {out_dir}")
             write_performer_files(filtered_chunks,
@@ -550,14 +628,27 @@ Examples:
                                   alias_map=alias_map)
             print(f"Done. File written: {canonical}.txt")
     else:
-        if jsonl_mode:
-            print(f"Writing JSONL files for all performers to: {out_dir}")
-            write_performer_jsonl(performer_chunks,
-                                  out_dir,
-                                  alias_map=alias_map)
+        if openai_mode:
+            print(
+                "Writing OpenAI JSONL files for all performers to: "
+                f"{out_dir}"
+            )
+            write_performer_openai_jsonl(
+                performer_chunks, out_dir, alias_map=alias_map
+            )
+            count = len([k for k in performer_chunks if k in alias_map])
+            print(f"Done. {count} OpenAI JSONL files written.")
+        elif hf_mode:
+            print(
+                "Writing HuggingFace JSONL files for all performers to: "
+                f"{out_dir}"
+            )
+            write_performer_hf_jsonl(
+                performer_chunks, out_dir, alias_map=alias_map
+            )
             print(f"Done."
                   f" {len([k for k in performer_chunks if k in alias_map])} "
-                  "JSONL files written.")
+                  "HF JSONL files written.")
         else:
             print(f"Writing performer files to: {out_dir}")
             write_performer_files(

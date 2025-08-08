@@ -38,16 +38,15 @@ class TestImportLyricsFile(unittest.TestCase):
     handling.
     """
     def test_load_lyrics_file(self):
-        """Test loading and reading the full contents of the lyrics file."""
-        # Use the actual dataset file for this test
-        lyrics_path = os.path.join(
-            os.path.dirname(__file__),
-            '../wu-tang-clan-lyrics-dataset/wu-tang.txt'
-        )
-        lyrics_path = os.path.abspath(lyrics_path)
-        contents = load_lyrics_file(lyrics_path)
-        # Check that the file is not empty and contains expected performer
-        #  label(s)
+        """Test loading and reading the contents of a lyrics file."""
+        sample = "[raekwon]\n" + "a" * 120
+        with tempfile.NamedTemporaryFile(
+            "w", delete=False, encoding="utf-8"
+        ) as tmp:
+            tmp.write(sample)
+            tmp_path = tmp.name
+        contents = load_lyrics_file(tmp_path)
+        os.remove(tmp_path)
         self.assertIsInstance(contents, str)
         self.assertTrue(len(contents) > 100)
         self.assertIn('[raekwon]', contents.lower())
@@ -579,10 +578,8 @@ class TestOutputTextFilesForPerformers(unittest.TestCase):
             self.assertNotIn("not_a_performer.txt", actual_files)
 
 
-class TestJsonlPromptCompletionPairs(unittest.TestCase):
-    """
-    Tests for JSONL prompt/completion splitting logic based on verse breaks.
-    """
+class TestOpenAIPromptCompletionPairs(unittest.TestCase):
+    """Tests for OpenAI prompt/completion splitting based on verse breaks."""
     def setUp(self):
         # Example Inspectah Deck lyrics as in the user prompt
         self.deck_lyrics = [
@@ -599,13 +596,10 @@ class TestJsonlPromptCompletionPairs(unittest.TestCase):
             "scandalous, made the metro panic"
         ]
 
-    def test_jsonl_pairs_respect_verse_breaks(self):
-        """
-        Test that JSONL chat-format pairs are split at verse breaks
-         (empty lines).
-        """
+    def test_openai_pairs_respect_verse_breaks(self):
+        """OpenAI chat pairs should split at verse breaks (empty lines)."""
         performer = "inspectah deck"
-        pairs = split_lines_to_jsonl_pairs(self.deck_lyrics, performer)
+        pairs = split_lines_to_openai_pairs(self.deck_lyrics, performer)
 
         expected = [
             {
@@ -779,8 +773,101 @@ class TestJsonlPromptCompletionPairs(unittest.TestCase):
 
         self.assertEqual(pairs, expected)
 
+    def test_write_performer_openai_jsonl(self):
+        """Test writing OpenAI JSONL files for performers."""
+        performer_chunks = {"inspectah deck": self.deck_lyrics}
+        expected = split_lines_to_openai_pairs(
+            self.deck_lyrics, "inspectah deck"
+        )
+        with tempdir() as out_dir:
+            write_performer_openai_jsonl(performer_chunks, out_dir)
+            out_path = os.path.join(out_dir, "inspectah_deck.openai.jsonl")
+            self.assertTrue(os.path.exists(out_path))
+            with open(out_path, "r", encoding="utf-8") as f:
+                lines = [json.loads(line) for line in f]
+            self.assertEqual(lines[0], expected[0])
 
-# 7. Output for a Specific Performer
+
+# 7. HuggingFace Prompt/Completion Pairs
+class TestHuggingFacePromptCompletionPairs(unittest.TestCase):
+    """Tests for HuggingFace-style prompt/completion splitting."""
+
+    def setUp(self):
+        # Example lyrics with a verse break
+        self.deck_lyrics = [
+            "ladies and gentlemen, we'd like to welcome to you",
+            "all the way from the slums of shaolin",
+            "special uninvited guests",
+            "came in through the back door",
+            "ladies and gentlemen, it's them!",
+            "",
+            "dance with the mantis, note the slim chances",
+            "chant this, anthem swing like pete sampras",
+            "takin it straight to big man on campus",
+            "brandish your weapon or get dropped to the canvas",
+            "scandalous, made the metro panic",
+        ]
+
+    def test_hf_pairs_respect_verse_breaks(self):
+        """Pairs should reset at blank lines and map sequential lines."""
+        performer = "inspectah deck"
+        pairs = split_lines_to_hf_pairs(self.deck_lyrics, performer)
+        expected = [
+            {
+                "prompt": "ladies and gentlemen, we'd like to welcome to you",
+                "completion": "all the way from the slums of shaolin",
+            },
+            {
+                "prompt": "all the way from the slums of shaolin",
+                "completion": "special uninvited guests",
+            },
+            {
+                "prompt": "special uninvited guests",
+                "completion": "came in through the back door",
+            },
+            {
+                "prompt": "came in through the back door",
+                "completion": "ladies and gentlemen, it's them!",
+            },
+            {
+                "prompt": "dance with the mantis, note the slim chances",
+                "completion": "chant this, anthem swing like pete sampras",
+            },
+            {
+                "prompt": "chant this, anthem swing like pete sampras",
+                "completion": "takin it straight to big man on campus",
+            },
+            {
+                "prompt": "takin it straight to big man on campus",
+                "completion": (
+                    "brandish your weapon or get dropped to the canvas"
+                ),
+            },
+            {
+                "prompt": (
+                    "brandish your weapon or get dropped to the canvas"
+                ),
+                "completion": "scandalous, made the metro panic",
+            },
+        ]
+        self.assertEqual(pairs, expected)
+
+    def test_write_performer_hf_jsonl(self):
+        """Test writing HuggingFace JSONL files for performers."""
+        performer_chunks = {"inspectah deck": self.deck_lyrics}
+        expected = split_lines_to_hf_pairs(
+            self.deck_lyrics, "inspectah deck"
+        )
+        with tempdir() as out_dir:
+            write_performer_hf_jsonl(performer_chunks, out_dir)
+            out_path = os.path.join(out_dir, "inspectah_deck.hf.jsonl")
+            self.assertTrue(os.path.exists(out_path))
+            with open(out_path, "r", encoding="utf-8") as f:
+                lines = [json.loads(line) for line in f]
+            self.assertEqual(lines[0], expected[0])
+
+
+# 8. Output for a Specific Performer
 class TestOutputForSpecificPerformer(unittest.TestCase):
     """
     Tests for outputting text files for a specific performer or alias.
@@ -895,7 +982,7 @@ class TestOutputForSpecificPerformer(unittest.TestCase):
             self.assertTrue(os.path.exists(os.path.join(out_dir, "rza.txt")))
 
 
-# 8. Refactor and Polish
+# 9. Refactor and Polish
 class TestRefactorAndPolish(unittest.TestCase):
     def test_pep8_compliance_test_module(self):
         """
