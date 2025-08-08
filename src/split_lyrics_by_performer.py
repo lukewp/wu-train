@@ -219,7 +219,34 @@ def split_lyrics_by_performer(
     return performer_chunks
 
 
-# 6. File I/O Functions
+
+# 6. Output Functions
+def write_performer_files(
+    performer_chunks: Dict[str, List[str]],
+    out_dir: str,
+    alias_map: Optional[Dict[str, List[str]]] = None
+) -> None:
+    """
+    Write each performer's lyrics to a file in the output directory.
+    Only valid performer keys (present in alias_map) are written.
+    Args:
+        performer_chunks: Dict of performer name -> list of lines.
+        out_dir: Output directory path.
+        alias_map: Optional dict of canonical performer names -> aliases. If provided, only write files for these keys.
+    """
+    os.makedirs(out_dir, exist_ok=True)
+    valid_performers = set(performer_chunks.keys())
+    if alias_map is not None:
+        valid_performers = set(alias_map.keys())
+    for performer, lines in performer_chunks.items():
+        if alias_map is not None and performer not in valid_performers:
+            continue
+        safe_name = ''.join(c if c.isalnum() or c in (' ', '_') else '_' for c in performer).replace(' ', '_')
+        out_path = os.path.join(out_dir, f"{safe_name}.txt")
+        with open(out_path, "w", encoding="utf-8") as f:
+            for line in lines:
+                f.write(line + "\n")
+
 def load_lyrics_file(filepath: str) -> str:
     """
     Load and return the full contents of the lyrics file as a string.

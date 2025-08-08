@@ -379,12 +379,61 @@ class TestOutputTextFilesForPerformers(unittest.TestCase):
     Tests for outputting text files for all canonical performers and ensuring only valid keys are used.
     """
     def test_output_files_for_all_performers(self):
-        """Test output files are created for all canonical performers."""
-        self.skipTest("Not implemented: output files for all performers")
-
+        """
+        Test that output files are created for all canonical performers and contain correct lyrics.
+        """
+        import tempfile
+        import os
+        import shutil
+        from src.split_lyrics_by_performer import write_performer_files
+    
+        # Simulated performer chunks
+        performer_chunks = {
+            "rza": ["RZA verse 1", "RZA verse 2"],
+            "gza": ["GZA verse 1"],
+            "method man": []
+        }
+        # Create a temporary output directory
+        out_dir = tempfile.mkdtemp()
+        try:
+            write_performer_files(performer_chunks, out_dir)
+            # Check that files exist and contents are correct
+            for performer, lines in performer_chunks.items():
+                out_path = os.path.join(out_dir, f"{performer.replace(' ', '_')}.txt")
+                self.assertTrue(os.path.exists(out_path), f"File for {performer} not found")
+                with open(out_path, "r", encoding="utf-8") as f:
+                    contents = f.read().splitlines()
+                self.assertEqual(contents, lines)
+        finally:
+            shutil.rmtree(out_dir)
+    
     def test_only_valid_performer_keys_used(self):
-        """Test only valid performer keys are used for output."""
-        self.skipTest("Not implemented: only valid performer keys used")
+        """
+        Test that only valid performer keys are used for output (no extra files).
+        """
+        import tempfile
+        import os
+        import shutil
+        from src.split_lyrics_by_performer import write_performer_files
+
+        performer_chunks = {
+            "rza": ["RZA verse"],
+            "gza": ["GZA verse"],
+            "not_a_performer": ["Should not be written"]
+        }
+        alias_map = {
+            "rza": ["rza"],
+            "gza": ["gza"]
+        }
+        out_dir = tempfile.mkdtemp()
+        try:
+            write_performer_files(performer_chunks, out_dir, alias_map=alias_map)
+            expected_files = {"rza.txt", "gza.txt"}
+            actual_files = set(os.listdir(out_dir))
+            self.assertTrue(expected_files.issubset(actual_files))
+            self.assertNotIn("not_a_performer.txt", actual_files)
+        finally:
+            shutil.rmtree(out_dir)
 
 # 7. Output for a Specific Performer
 class TestOutputForSpecificPerformer(unittest.TestCase):
