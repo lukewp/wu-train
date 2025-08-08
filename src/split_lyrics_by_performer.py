@@ -3,19 +3,24 @@
 #
 # This module provides core utilities for parsing, normalizing, and classifying
 # section keys in Wu-Tang Clan and affiliate lyrics datasets. It enables robust
-# extraction and canonicalization of performer labels, filtering of non-performer
-# sections, and preparation of data for LLM training or analysis.
+# extraction and canonicalization of performer labels, filtering of non-
+# performer sections, and preparation of data for LLM training or analysis.
 #
 # Main Features:
-# - extract_key_candidates_from_lines: Extract and normalize [xxx] keys from lyrics lines.
-# - normalize_key_string: Consistent normalization of key strings for comparison and classification.
-# - match_key_to_canonical: Map aliases to canonical performer names using a provided alias map.
-# - classify_key: Classify keys as 'performer', 'ignore', or 'skip' using alias and ignore sets.
-# - IGNORE_SET: Comprehensive set of non-performer/structural labels to filter out.
+# - extract_key_candidates_from_lines: Extract and normalize [xxx] keys from
+#   lyrics lines.
+# - normalize_key_string: Consistent normalization of key strings for
+#   comparison and classification.
+# - match_key_to_canonical: Map aliases to canonical performer names using a
+#   provided alias map.
+# - classify_key: Classify keys as 'performer', 'ignore', or 'skip' using alias
+#   and ignore sets.
+# - IGNORE_SET: Comprehensive set of non-performer/structural labels to filter
+#   out.
 # - load_lyrics_file: Utility for reading lyrics files with error handling.
 #
-# This module is designed for use in data cleaning, preprocessing, and test-driven
-# workflows for lyric-based machine learning and analysis projects.
+# This module is designed for use in data cleaning, preprocessing, and test-
+#   driven workflows for lyric-based machine learning and analysis projects.
 # =============================================================================
 
 # 1. Imports
@@ -23,19 +28,27 @@ import re
 import os
 from typing import List, Dict, Set, Optional
 
- # 2. Constants
+# 2. Constants
 IGNORE_SET: Set[str] = set([
-    "skit", "interlude", "chorus", "bridge", "intro", "outro", "instrumental", "crowd", "audience", "refrain",
-    "dj", "mc", "beat", "music", "sound", "applause", "laughing", "noise", "verse", "break", "hook", "only", "chrous",
-    "2x", "3x", "4x", "5x", "6x", "x2", "x3", "x4", "x5", "x6", "first", "second", "last", "repeat", "both",
-    "1", "2", "3", "4", "5", "6", "7", "one", "two", "three", "four", "five", "six", "seven", 
-    "*sound of bomb dropping*", "15 seconds of instrumental", "35 seconds of instrumental pass until the martial arts samples",
-    "instrumental for 40 seconds", "instrumental for the first 11 seconds", "music", "fades", "in", "out",
-    "changes", "drops", "switch", "bees", "beez", "buzzing", "bell rings", "last", "line", "lines", "latter",
-    "coughing", "dogs barking", "eerie winds blowing", "glasses jewelry tinkling", "gong bangs", "gun blast", "gunblast", "gunshot",
-    "rocket fired whistles off and explodes breaking glass", "skip next line on the second time of chorus",
-    "sound of a plane crashing and explosion", "sounds of combat", "sounds of fighting", "swords clash",
+    "skit", "interlude", "chorus", "bridge", "intro", "outro", "instrumental",
+    "crowd", "audience", "refrain", "dj", "mc", "beat", "music", "sound",
+    "applause", "laughing", "noise", "verse", "break", "hook", "only",
+    "2x", "3x", "4x", "5x", "6x", "x2", "x3", "x4", "x5", "x6",
+    "first", "second", "last", "repeat", "both",
+    "1", "2", "3", "4", "5", "6", "7",
+    "one", "two", "three", "four", "five", "six", "seven",
+    "*sound of bomb dropping*", "15 seconds of instrumental", "chrous",
+    "35 seconds of instrumental pass until the martial arts samples",
+    "instrumental for 40 seconds", "instrumental for the first 11 seconds",
+    "music", "fades", "in", "out", "changes", "drops", "switch", "bees",
+    "beez", "buzzing", "bell rings", "last", "line", "lines", "latter",
+    "coughing", "dogs barking", "eerie winds blowing", "swords clash",
+    "glasses jewelry tinkling", "gong bangs", "gun blast", "gunblast",
+    "gunshot", "rocket fired whistles off and explodes breaking glass",
+    "skip next line on the second time of chorus", "sounds of fighting",
+    "sound of a plane crashing and explosion", "sounds of combat"
 ])
+
 
 # 3. Core Utility Functions
 def extract_key_candidates_from_lines(
@@ -48,11 +61,14 @@ def extract_key_candidates_from_lines(
 
     Args:
         lines (list of str): Lines of lyrics to scan for [xxx] keys.
-        trim_chars (list of str, optional): Characters to treat as separators (replace with space, e.g., ':').
-        replace_with_space_chars (list of str, optional): Characters to replace with whitespace (e.g., '&', '/').
+        trim_chars (list of str, optional): Characters to treat as separators
+            (replace with space, e.g., ':').
+        replace_with_space_chars (list of str, optional): Characters to replace
+            with whitespace (e.g., '&', '/').
 
     Returns:
-        list of str: Cleaned keys found in the input lines, lowercased and whitespace-normalized.
+        list of str: Cleaned keys found in the input lines, lowercased and
+            whitespace-normalized.
     """
     if trim_chars is None:
         trim_chars = [':']
@@ -65,9 +81,14 @@ def extract_key_candidates_from_lines(
         if match:
             key = match.group(1)
             # Use normalize_key_string for normalization
-            key = normalize_key_string(key, trim_chars=trim_chars, replace_with_space_chars=replace_with_space_chars)
+            key = normalize_key_string(
+                key,
+                trim_chars=trim_chars,
+                replace_with_space_chars=replace_with_space_chars
+            )
             keys.append(key)
     return keys
+
 
 # 4. Domain-Specific Functions
 def match_key_to_canonical(
@@ -75,8 +96,8 @@ def match_key_to_canonical(
     alias_map: Dict[str, List[str]]
 ) -> Optional[str]:
     """
-    Given a key (already cleaned/lowercased), return the canonical performer name from alias_map,
-    or None if not found.
+    Given a key (already cleaned/lowercased), return the canonical performer
+      name from alias_map, or None if not found.
 
     Args:
         key (str): Cleaned key to look up (e.g., 'rza', 'bobby digital').
@@ -91,6 +112,7 @@ def match_key_to_canonical(
             if key_norm == alias.strip().lower():
                 return canonical
     return None
+
 
 def classify_key(
     key: str,
@@ -117,14 +139,17 @@ def classify_key(
     # 2. Check for ignore: full-string match first
     if key_norm in ignore_set:
         return 'ignore'
-    # 3. Check for ignore: if all words in key_norm are in ignore_set, ignore; else, skip
+    # 3. Check for ignore: if all words in key_norm are in ignore_set, ignore;
+    #    else, skip
     words = [w for w in key_norm.split() if w.strip()]
     if words and all(w in ignore_set for w in words):
         return 'ignore'
     # 4. Otherwise, skip
     return 'skip'
 
-# Helper: normalize a single key string using the same logic as extract_key_candidates_from_lines
+
+# Helper: normalize a single key string using the same logic as
+#   extract_key_candidates_from_lines
 def normalize_key_string(
     key: str,
     trim_chars: Optional[List[str]] = None,
@@ -134,7 +159,10 @@ def normalize_key_string(
         trim_chars = [':']
     if replace_with_space_chars is None:
         replace_with_space_chars = ['&', '/', '+', '-', '(', ')', ',']
-    all_replace = list(set((replace_with_space_chars or []) + (trim_chars or [])))
+    all_replace = list(set(
+        (replace_with_space_chars or []) +
+        (trim_chars or [])
+    ))
     # Remove brackets if present
     key = key.strip()
     if key.startswith('[') and key.endswith(']'):
@@ -157,7 +185,8 @@ def split_lyrics_by_performer(
     ignore_set: Set[str] = IGNORE_SET
 ) -> Dict[str, List[str]]:
     """
-    Process lyrics lines, attributing text chunks to performers and skipping lines after ignore/skip keys.
+    Process lyrics lines, attributing text chunks to performers and skipping
+      lines after ignore/skip keys.
     Args:
         lines: List of lyric lines (including [key] lines).
         alias_map: Mapping of canonical performer names to aliases.
@@ -165,7 +194,9 @@ def split_lyrics_by_performer(
     Returns:
         Dict of performer name -> list of attributed lines.
     """
-    performer_chunks: Dict[str, List[str]] = {canonical: [] for canonical in alias_map}
+    performer_chunks: Dict[str, List[str]] = {
+        c: [] for c in alias_map
+    }
     current_mode = None  # 'performer', 'ignore', 'skip', or None
     current_performers = []  # List of canonical performer names
 
@@ -178,7 +209,8 @@ def split_lyrics_by_performer(
             key_type = classify_key(key_norm, alias_map, ignore_set)
             # Always reset mode and performers on new key
             if key_type == 'performer':
-                # Map all possible aliases in the key to canonical performer names
+                # Map all possible aliases in the key to canonical
+                #   performer names
                 performers = set()
                 for alias in alias_map:
                     for a in alias_map[alias]:
@@ -219,7 +251,6 @@ def split_lyrics_by_performer(
     return performer_chunks
 
 
-
 # 6. Output Functions
 def write_performer_files(
     performer_chunks: Dict[str, List[str]],
@@ -232,7 +263,8 @@ def write_performer_files(
     Args:
         performer_chunks: Dict of performer name -> list of lines.
         out_dir: Output directory path.
-        alias_map: Optional dict of canonical performer names -> aliases. If provided, only write files for these keys.
+        alias_map: Optional dict of canonical performer names -> aliases.
+            If provided, only write files for these keys.
     """
     os.makedirs(out_dir, exist_ok=True)
     valid_performers = set(performer_chunks.keys())
@@ -241,11 +273,15 @@ def write_performer_files(
     for performer, lines in performer_chunks.items():
         if alias_map is not None and performer not in valid_performers:
             continue
-        safe_name = ''.join(c if c.isalnum() or c in (' ', '_') else '_' for c in performer).replace(' ', '_')
+        safe_name = ''.join(
+            c if c.isalnum() or c in (' ', '_') else '_'
+            for c in performer
+        ).replace(' ', '_')
         out_path = os.path.join(out_dir, f"{safe_name}.txt")
         with open(out_path, "w", encoding="utf-8") as f:
             for line in lines:
                 f.write(line + "\n")
+
 
 def load_lyrics_file(filepath: str) -> str:
     """
@@ -271,7 +307,11 @@ if __name__ == "__main__":
     from pathlib import Path
 
     # Default file path
-    default_path = Path(__file__).parent.parent / "wu-tang-clan-lyrics-dataset" / "wu-tang.txt"
+    default_path = (
+        Path(__file__).parent.parent /
+        "wu-tang-clan-lyrics-dataset" /
+        "wu-tang.txt"
+    )
     if len(sys.argv) > 1:
         lyrics_path = Path(sys.argv[1])
     else:
