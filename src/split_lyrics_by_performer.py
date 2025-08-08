@@ -1,4 +1,3 @@
-
 # =============================================================================
 # split_lyrics_by_performer.py
 #
@@ -24,10 +23,25 @@
 #   driven workflows for lyric-based machine learning and analysis projects.
 # =============================================================================
 
+__all__ = [
+    'extract_key_candidates_from_lines',
+    'normalize_key_string',
+    'match_key_to_canonical',
+    'classify_key',
+    'find_canonical_performers',
+    'split_lyrics_by_performer',
+    'write_performer_files',
+    'write_performer_jsonl',
+    'split_lines_to_jsonl_pairs',
+    'load_lyrics_file',
+    'IGNORE_SET',
+]
+
 # 1. Imports
 import re
 import os
 from typing import List, Dict, Set, Optional
+import json
 
 # 2. Constants
 
@@ -289,6 +303,47 @@ def split_lyrics_by_performer(
     return performer_chunks
 
 
+# Helper: split lines into JSONL prompt/completion pairs based on verse breaks
+def split_lines_to_jsonl_pairs(
+    lines: List[str],
+    prompt_sep: str = " ++++",
+    completion_stop: str = " ####"
+) -> List[Dict[str, str]]:
+    """
+    Given a list of lyric lines, split into prompt/completion pairs for
+     LLM fine-tuning. Each prompt is a line, and the completion is the next
+     line, with verse breaks (empty lines) resetting the pairing. Only pairs
+     that do not cross verse breaks are included.
+    Args:
+        lines: List of lyric lines (may include empty lines for verse breaks).
+        prompt_sep: String to append to the prompt (default: ' ++++').
+        completion_stop: String to append to the completion (default: ' ####').
+    Returns:
+        List of dicts with 'prompt' and 'completion' keys.
+    """
+    pairs = []
+    # Split into blocks (verses) separated by empty lines
+    block = []
+    for line in lines:
+        if line.strip() == '':
+            if block:
+                # Pair every consecutive line in the block
+                for i in range(len(block) - 1):
+                    prompt = block[i].strip() + prompt_sep
+                    completion = ' ' + block[i+1].strip() + completion_stop
+                    pairs.append({"prompt": prompt, "completion": completion})
+                block = []
+        else:
+            block.append(line)
+    # Process any trailing block
+    if block:
+        for i in range(len(block) - 1):
+            prompt = block[i].strip() + prompt_sep
+            completion = ' ' + block[i+1].strip() + completion_stop
+            pairs.append({"prompt": prompt, "completion": completion})
+    return pairs
+
+
 # 6. Output Functions
 def write_performer_files(
     performer_chunks: Dict[str, List[str]],
@@ -321,6 +376,48 @@ def write_performer_files(
                 f.write(line + "\n")
 
 
+def write_performer_jsonl(
+    performer_chunks: Dict[str, List[str]],
+    out_dir: str,
+    alias_map: Optional[Dict[str, List[str]]] = None,
+    prompt_sep: str = " ++++",
+    completion_stop: str = " ####"
+) -> None:
+    """
+    Write each performer's lyrics as JSONL prompt/completion pairs for LLM
+     fine-tuning. Each prompt is a verse (split by double newlines), and the
+     completion is the next verse.
+    Args:
+        performer_chunks:   Dict of performer name -> list of lines.
+        out_dir:            Output directory path.
+        alias_map:          Optional dict of canonical performer
+                              names -> aliases.
+        prompt_sep:         Separator to end the prompt (default: ' ++++').
+        completion_stop:    Stop sequence to end the completion
+                              (default: ' ####').
+    """
+    os.makedirs(out_dir, exist_ok=True)
+    valid_performers = set(performer_chunks.keys())
+    if alias_map is not None:
+        valid_performers = set(alias_map.keys())
+    for performer, lines in performer_chunks.items():
+        if alias_map is not None and performer not in valid_performers:
+            continue
+        safe_name = ''.join(
+            c if c.isalnum() or c in (' ', '_') else '_'
+            for c in performer
+        ).replace(' ', '_')
+        out_path = os.path.join(out_dir, f"{safe_name}.jsonl")
+        pairs = split_lines_to_jsonl_pairs(
+            lines,
+            prompt_sep=prompt_sep,
+            completion_stop=completion_stop
+        )
+        with open(out_path, "w", encoding="utf-8") as f:
+            for obj in pairs:
+                f.write(json.dumps(obj, ensure_ascii=False) + "\n")
+
+
 def load_lyrics_file(filepath: str) -> str:
     """
     Load and return the full contents of the lyrics file as a string.
@@ -344,10 +441,10 @@ if __name__ == "__main__":
     import sys
     from pathlib import Path
 
-    # Help argument handler
     help_text = f"""
 Usage:
-    python -m src.split_lyrics_by_performer [infile] [outdir] [performer_alias]
+    python -m src.split_lyrics_by_performer [input_file] [output_dir]
+                                            [performer_or_alias] [--jsonl]
 
 Arguments:
     input_file         Path to lyrics file
@@ -356,12 +453,17 @@ Arguments:
     output_dir         Directory to write performer files (default: out/)
 
     performer_or_alias (optional) Only output the file for the specified
-                         performer or alias (e.g., rza, bobby digital)
+                         performer or alias (e.g., rza, ghost, raekwon)
+
+    --jsonl            (optional) Export as JSONL prompt/completion pairs for
+                         LLM fine-tuning
 
 Examples:
     python -m src.split_lyrics_by_performer
     python -m src.split_lyrics_by_performer wu-tang.txt out rza
     python -m src.split_lyrics_by_performer wu-tang.txt out "tony starks"
+    python -m src.split_lyrics_by_performer wu-tang.txt out --jsonl
+    python -m src.split_lyrics_by_performer wu-tang.txt out rza --jsonl
 """
     if any(arg in ("-h", "--help") for arg in sys.argv[1:]):
         print(help_text)
@@ -373,7 +475,7 @@ Examples:
         "wu-tang-clan-lyrics-dataset" /
         "wu-tang.txt"
     )
-    if len(sys.argv) > 1:
+    if len(sys.argv) > 1 and not sys.argv[1].startswith('-'):
         lyrics_path = Path(sys.argv[1])
     else:
         lyrics_path = default_path
@@ -388,7 +490,6 @@ Examples:
     lines = text.splitlines()
 
     # Load alias map
-    import json
     alias_path = Path(__file__).parent / "performer_aliases.json"
     try:
         with open(alias_path, 'r', encoding='utf-8') as f:
@@ -401,27 +502,53 @@ Examples:
     performer_chunks = split_lyrics_by_performer(lines, alias_map, IGNORE_SET)
 
     # Output directory (default: 'out')
-    if len(sys.argv) > 2:
+    if len(sys.argv) > 2 and not sys.argv[2].startswith('-'):
         out_dir = sys.argv[2]
     else:
         out_dir = str(Path(__file__).parent.parent / "out")
 
+    # Check for --jsonl option
+    jsonl_mode = any(arg == "--jsonl" for arg in sys.argv[1:])
+
     # Optional: performer or alias filter
-    if len(sys.argv) > 3:
+    performer_arg = None
+    if len(sys.argv) > 3 and not sys.argv[3].startswith('-'):
         performer_arg = sys.argv[3]
+
+    if performer_arg:
         canonical = match_key_to_canonical(performer_arg, alias_map)
         if canonical is None:
-            print(
-                  f"Error: Performer or alias '{performer_arg}' "
-                  "not found in alias map."
-                  )
+            print(f"Error: Performer or alias '{performer_arg}' "
+                  f"not found in alias map.")
             sys.exit(1)
         filtered_chunks = {canonical: performer_chunks.get(canonical, [])}
-        print(f"Writing file for performer: {canonical} to {out_dir}")
-        write_performer_files(filtered_chunks, out_dir, alias_map=alias_map)
-        print(f"Done. File written: {canonical}.txt")
+        if jsonl_mode:
+            print(f"Writing JSONL file for performer: {canonical} "
+                  f"to {out_dir}")
+            write_performer_jsonl(filtered_chunks,
+                                  out_dir,
+                                  alias_map=alias_map)
+            print(f"Done. File written: {canonical}.jsonl")
+        else:
+            print(f"Writing file for performer: {canonical} to {out_dir}")
+            write_performer_files(filtered_chunks,
+                                  out_dir,
+                                  alias_map=alias_map)
+            print(f"Done. File written: {canonical}.txt")
     else:
-        print(f"Writing performer files to: {out_dir}")
-        write_performer_files(performer_chunks, out_dir, alias_map=alias_map)
-        print(f"Done. {len([k for k in performer_chunks if k in alias_map])} "
-              "performer files written.")
+        if jsonl_mode:
+            print(f"Writing JSONL files for all performers to: {out_dir}")
+            write_performer_jsonl(performer_chunks,
+                                  out_dir,
+                                  alias_map=alias_map)
+            print(f"Done."
+                  f" {len([k for k in performer_chunks if k in alias_map])} "
+                  "JSONL files written.")
+        else:
+            print(f"Writing performer files to: {out_dir}")
+            write_performer_files(
+                performer_chunks, out_dir, alias_map=alias_map
+            )
+            print(f"Done."
+                  f" {len([k for k in performer_chunks if k in alias_map])} "
+                  "performer files written.")

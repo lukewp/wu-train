@@ -579,6 +579,94 @@ class TestOutputTextFilesForPerformers(unittest.TestCase):
             self.assertNotIn("not_a_performer.txt", actual_files)
 
 
+class TestJsonlPromptCompletionPairs(unittest.TestCase):
+    """
+    Tests for JSONL prompt/completion splitting logic based on verse breaks.
+    """
+    def setUp(self):
+        # Example Inspectah Deck lyrics as in the user prompt
+        self.deck_lyrics = [
+            "ladies and gentlemen, we'd like to welcome to you",
+            "all the way from the slums of shaolin",
+            "special uninvited guests",
+            "came in through the back door",
+            "ladies and gentlemen, it's them!",
+            "",
+            "dance with the mantis, note the slim chances",
+            "chant this, anthem swing like pete sampras",
+            "takin it straight to big man on campus",
+            "brandish your weapon or get dropped to the canvas",
+            "scandalous, made the metro panic"
+        ]
+
+    def test_jsonl_pairs_respect_verse_breaks(self):
+        """
+        Test that JSONL prompt/completion pairs are split at verse breaks
+          (empty lines).
+        """
+        # Import the function to test (assume it will be called
+        #   split_lines_to_jsonl_pairs)
+        pairs = split_lines_to_jsonl_pairs(self.deck_lyrics)
+
+        # Expected pairs based on the example
+        expected = [
+            {
+                "prompt":
+                "ladies and gentlemen, we'd like to welcome to you ++++",
+                "completion":
+                " all the way from the slums of shaolin ####"
+            },
+            {
+                "prompt":
+                "all the way from the slums of shaolin ++++",
+                "completion":
+                " special uninvited guests ####"
+            },
+            {
+                "prompt":
+                "special uninvited guests ++++",
+                "completion":
+                " came in through the back door ####"
+            },
+            {
+                "prompt":
+                "came in through the back door ++++",
+                "completion":
+                " ladies and gentlemen, it's them! ####"
+            },
+            {
+                "prompt":
+                "dance with the mantis, note the slim chances ++++",
+                "completion":
+                " chant this, anthem swing like pete sampras ####"
+            },
+            {
+                "prompt":
+                "chant this, anthem swing like pete sampras ++++",
+                "completion":
+                " takin it straight to big man on campus ####"
+            },
+            {
+                "prompt":
+                "takin it straight to big man on campus ++++",
+                "completion":
+                " brandish your weapon or get dropped to the canvas ####"
+            },
+            {
+                "prompt":
+                "brandish your weapon or get dropped to the canvas ++++",
+                "completion":
+                " scandalous, made the metro panic ####"
+            }
+        ]
+
+        # Only check the first three pairs for this example
+        self.assertGreaterEqual(len(pairs), 3)
+        for i in range(3):
+            self.assertEqual(pairs[i]["prompt"], expected[i]["prompt"])
+            self.assertEqual(pairs[i]["completion"], expected[i]["completion"])
+
+
 # 7. Output for a Specific Performer
 class TestOutputForSpecificPerformer(unittest.TestCase):
     """
