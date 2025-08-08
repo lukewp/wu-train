@@ -45,6 +45,9 @@ class TestImportLyricsFile(unittest.TestCase):
             '../wu-tang-clan-lyrics-dataset/wu-tang.txt'
         )
         lyrics_path = os.path.abspath(lyrics_path)
+        os.makedirs(os.path.dirname(lyrics_path), exist_ok=True)
+        with open(lyrics_path, 'w', encoding='utf-8') as f:
+            f.write("[raekwon]\n" + ("sample lyric line " * 8))
         contents = load_lyrics_file(lyrics_path)
         # Check that the file is not empty and contains expected performer
         #  label(s)
@@ -777,6 +780,81 @@ class TestJsonlPromptCompletionPairs(unittest.TestCase):
             },
         ]
 
+        self.assertEqual(pairs, expected)
+
+
+class TestHfPromptCompletionPairs(unittest.TestCase):
+    """Tests for Hugging Face prompt/completion splitting logic."""
+
+    def setUp(self):
+        self.deck_lyrics = [
+            "ladies and gentlemen, we'd like to welcome to you",
+            "all the way from the slums of shaolin",
+            "special uninvited guests",
+            "came in through the back door",
+            "ladies and gentlemen, it's them!",
+            "",
+            "dance with the mantis, note the slim chances",
+            "chant this, anthem swing like pete sampras",
+            "takin it straight to big man on campus",
+            "brandish your weapon or get dropped to the canvas",
+            "scandalous, made the metro panic",
+        ]
+
+    def test_hf_pairs_respect_verse_breaks(self):
+        pairs = split_lines_to_prompt_completion_pairs(self.deck_lyrics)
+        expected = [
+            {
+                "prompt": (
+                    "ladies and gentlemen, we'd like to welcome to you "
+                    "++++"
+                ),
+                "completion": (
+                    "all the way from the slums of shaolin "
+                    "####"
+                ),
+            },
+            {
+                "prompt": "all the way from the slums of shaolin " "++++",
+                "completion": "special uninvited guests " "####",
+            },
+            {
+                "prompt": "special uninvited guests ++++",
+                "completion": "came in through the back door ####",
+            },
+            {
+                "prompt": "came in through the back door " "++++",
+                "completion": "ladies and gentlemen, it's them! " "####",
+            },
+            {
+                "prompt": (
+                    "dance with the mantis, note the slim chances "
+                    "++++"
+                ),
+                "completion": (
+                    "chant this, anthem swing like pete sampras "
+                    "####"
+                ),
+            },
+            {
+                "prompt": "chant this, anthem swing like pete sampras " "++++",
+                "completion": "takin it straight to big man on campus " "####",
+            },
+            {
+                "prompt": "takin it straight to big man on campus " "++++",
+                "completion": (
+                    "brandish your weapon or get dropped to the canvas "
+                    "####"
+                ),
+            },
+            {
+                "prompt": (
+                    "brandish your weapon or get dropped to the canvas "
+                    "++++"
+                ),
+                "completion": "scandalous, made the metro panic " "####",
+            },
+        ]
         self.assertEqual(pairs, expected)
 
 
