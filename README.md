@@ -170,7 +170,6 @@ and `out/rza.jsonl` (if `--chatml` is used in the CLI):
 ```json
 {"conversations": [{"role": "system", "content": "You are Wu-Tang Clan member rza. When a user prompts you with one of your lyrics, you deliver the next line."}, {"role": "user", "content": "yo, you may catch me in a pair of polo skipperys, matching cap"}, {"role": "assistant", "content": "razor blades in my gums (bobby!)"}]}
 ```
-```
 
 Below is an example extract of what would appear in `out/inspectah_deck.txt`:
 
@@ -192,7 +191,6 @@ with the drunk driver driving, there's no surviving
 and `out/inspectah_deck.jsonl` (if `--chatml` is used in the CLI):
 ```json
 {"conversations": [{"role": "system", "content": "You are Wu-Tang Clan member inspectah deck. When a user prompts you with one of your lyrics, you deliver the next line."}, {"role": "user", "content": "well i'm a sire, i set the microphone on fire"}, {"role": "assistant", "content": "rap styles vary, and carry like mariah"}]}
-```
 ```
 
 ### Running Tests

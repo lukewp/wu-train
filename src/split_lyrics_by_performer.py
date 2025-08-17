@@ -412,8 +412,6 @@ def split_lines_to_jsonl_pairs(
         # Only add non-key, non-empty lines to block
         if not is_key_line(line) and line.strip() != '':
             block.append(line)
-        elif is_key_line(line):
-            block_has_key_line = True
     # Process any remaining block
     if block:
         if (

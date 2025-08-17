@@ -2,7 +2,6 @@ import unittest
 import os
 import tempfile
 import shutil
-import unittest
 import json
 
 from io import StringIO
