@@ -32,9 +32,7 @@ __all__ = [
     'split_lyrics_by_performer',
     'write_performer_files',
     'write_performer_jsonl',
-    'write_performer_hf_jsonl',
     'split_lines_to_jsonl_pairs',
-    'split_lines_to_prompt_completion_pairs',
     'load_lyrics_file',
     'IGNORE_SET',
 ]
@@ -398,37 +396,6 @@ def split_lines_to_jsonl_pairs(
     return chat_pairs
 
 
-def split_lines_to_prompt_completion_pairs(
-    lines: List[str],
-    prompt_sep: str = " ++++",
-    completion_stop: str = " ####",
-) -> List[Dict[str, str]]:
-    """Return Hugging Face style prompt/completion pairs.
-
-    Each prompt is a line with ``prompt_sep`` appended and the completion is
-    the subsequent line with ``completion_stop`` appended. Verse breaks
-    (empty lines) reset the pairing logic.
-    """
-    pairs: List[Dict[str, str]] = []
-    block: List[str] = []
-    for line in lines:
-        if line.strip() == "":
-            if block:
-                for i in range(len(block) - 1):
-                    prompt = block[i].strip() + prompt_sep
-                    completion = block[i + 1].strip() + completion_stop
-                    pairs.append({"prompt": prompt, "completion": completion})
-                block = []
-        else:
-            block.append(line)
-    if block:
-        for i in range(len(block) - 1):
-            prompt = block[i].strip() + prompt_sep
-            completion = block[i + 1].strip() + completion_stop
-            pairs.append({"prompt": prompt, "completion": completion})
-    return pairs
-
-
 # 6. Output Functions
 def write_performer_files(
     performer_chunks: Dict[str, List[str]],
@@ -500,36 +467,6 @@ def write_performer_jsonl(
                 f.write(json.dumps(obj, ensure_ascii=False) + "\n")
 
 
-def write_performer_hf_jsonl(
-    performer_chunks: Dict[str, List[str]],
-    out_dir: str,
-    alias_map: Optional[Dict[str, List[str]]] = None,
-    prompt_sep: str = " ++++",
-    completion_stop: str = " ####",
-) -> None:
-    """Write Hugging Face style prompt/completion JSONL files."""
-    os.makedirs(out_dir, exist_ok=True)
-    valid_performers = set(performer_chunks.keys())
-    if alias_map is not None:
-        valid_performers = set(alias_map.keys())
-    for performer, lines in performer_chunks.items():
-        if alias_map is not None and performer not in valid_performers:
-            continue
-        safe_name = ''.join(
-            c if c.isalnum() or c in (' ', '_') else '_'
-            for c in performer
-        ).replace(' ', '_')
-        out_path = os.path.join(out_dir, f"{safe_name}.jsonl")
-        pairs = split_lines_to_prompt_completion_pairs(
-            lines,
-            prompt_sep=prompt_sep,
-            completion_stop=completion_stop,
-        )
-        with open(out_path, "w", encoding="utf-8") as f:
-            for obj in pairs:
-                f.write(json.dumps(obj, ensure_ascii=False) + "\n")
-
-
 def load_lyrics_file(filepath: str) -> str:
     """
     Load and return the full contents of the lyrics file as a string.
@@ -563,8 +500,26 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
         description=(
-            "Split lyrics by performer and optionally export JSONL "
-            "for LLM fine-tuning"
+            "Split lyrics by performer and export in Unsloth-compatible"
+            " JSONL formats for LLM fine-tuning.\n"
+            "\nOutput format options (choose one):\n"
+            "  --chatml    Export ChatML format (Unsloth default,"
+            " recommended)\n"
+            "  --sharegpt  Export ShareGPT format (OpenChat/Unsloth"
+            " compatible)\n"
+            "\nIf no format is specified, ChatML is used by default."
+        ),
+        epilog=(
+            "Examples:\n"
+            "  python -m src.split_lyrics_by_performer"
+            " wu-tang-clan-lyrics-dataset/wu-tang.txt out\n"
+            "  python -m src.split_lyrics_by_performer"
+            " wu-tang-clan-lyrics-dataset/wu-tang.txt out --chatml\n"
+            "  python -m src.split_lyrics_by_performer"
+            " wu-tang-clan-lyrics-dataset/wu-tang.txt out --sharegpt\n"
+            "  python -m src.split_lyrics_by_performer"
+            " wu-tang-clan-lyrics-dataset/wu-tang.txt out"
+            " --performer rza --chatml\n"
         )
     )
     parser.add_argument(
@@ -583,17 +538,12 @@ if __name__ == "__main__":
     group.add_argument(
         "--chatml",
         action="store_true",
-        help="Export ChatML (Unsloth default) JSONL files",
+        help="Export ChatML format (Unsloth default, recommended)",
     )
     group.add_argument(
         "--sharegpt",
         action="store_true",
-        help="Export ShareGPT JSONL files",
-    )
-    group.add_argument(
-        "--hf",
-        action="store_true",
-        help="Export Hugging Face prompt/completion JSONL files",
+        help="Export ShareGPT format (OpenChat/Unsloth compatible)",
     )
     parser.add_argument(
         "--performer",
@@ -634,7 +584,7 @@ if __name__ == "__main__":
             sys.exit(1)
         performer_chunks = {canonical: performer_chunks.get(canonical, [])}
 
-    if args.chatml or (not args.sharegpt and not args.hf):
+    if args.chatml or (not args.sharegpt):
         print(
             f"Writing ChatML JSONL files for performers to: {out_dir}"
         )
@@ -658,15 +608,6 @@ if __name__ == "__main__":
         )
         count = len([k for k in performer_chunks if k in alias_map])
         print("Done.", f"{count} JSONL files written.")
-    elif args.hf:
-        print(f"Writing Hugging Face JSONL files for performers to: {out_dir}")
-        write_performer_hf_jsonl(
-            performer_chunks,
-            out_dir,
-            alias_map=alias_map,
-        )
-        count = len([k for k in performer_chunks if k in alias_map])
-        print("Done.", f"{count} JSONL files written.")
     else:
         print(f"Writing performer files to: {out_dir}")
         write_performer_files(
@@ -676,3 +617,7 @@ if __name__ == "__main__":
         )
         count = len([k for k in performer_chunks if k in alias_map])
         print("Done.", f"{count} performer files written.")
+
+    print("\nNote: For custom LLM formats, use Unsloth's chat_template"
+          " reformatter as middleware to convert ChatML/ShareGPT output"
+          " to your target format.")
