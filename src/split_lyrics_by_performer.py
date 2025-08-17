@@ -188,6 +188,22 @@ def classify_key(
     return 'skip'
 
 
+# Helper: check if any line in a block is an ignore key
+def block_has_ignore_key(block):
+    for line in block:
+        # Check both key lines and non-key lines for ignore keys
+        key_match = re.match(r'^\[([^\]]+)\]$', line.strip())
+        if key_match:
+            key_norm = normalize_key_string(key_match.group(1))
+            if key_norm in IGNORE_SET:
+                return True
+        # Also check if the line itself contains an ignore key
+        line_norm = normalize_key_string(line.strip())
+        if line_norm in IGNORE_SET:
+            return True
+    return False
+
+
 # Helper: normalize a single key string using the same logic as
 #   extract_key_candidates_from_lines
 def normalize_key_string(
@@ -370,29 +386,49 @@ def split_lines_to_jsonl_pairs(
     """
     chat_pairs = []
     block = []
+
+    def is_key_line(line):
+        return re.match(r'^\[([^\]]+)\]$', line.strip()) is not None
+
+    block_has_key_line = False
     for line in lines:
-        if line.strip() == '':
+        if is_key_line(line) or line.strip() == '':
+            # On key line or empty line, process current block
             if block:
-                if format == "chatml":
-                    chat_pairs.extend(
-                        format_chatml_conversations(block, performer)
-                    )
-                elif format == "sharegpt":
-                    chat_pairs.extend(
-                        format_sharegpt_conversations(block, performer)
-                    )
+                # If any line in the block is a key line, skip the block
+                if (len(block) >= 2 and not block_has_key_line
+                        and not block_has_ignore_key(block)):
+                    if format == "chatml":
+                        chat_pairs.extend(
+                            format_chatml_conversations(block, performer)
+                        )
+                    elif format == "sharegpt":
+                        chat_pairs.extend(
+                            format_sharegpt_conversations(block, performer)
+                        )
                 block = []
-        else:
+                block_has_key_line = False
+            continue
+        # Only add non-key, non-empty lines to block
+        if not is_key_line(line) and line.strip() != '':
             block.append(line)
+        elif is_key_line(line):
+            block_has_key_line = True
+    # Process any remaining block
     if block:
-        if format == "chatml":
-            chat_pairs.extend(
-                format_chatml_conversations(block, performer)
-            )
-        elif format == "sharegpt":
-            chat_pairs.extend(
-                format_sharegpt_conversations(block, performer)
-            )
+        if (
+            len(block) >= 2
+            and not block_has_key_line
+            and not block_has_ignore_key(block)
+        ):
+            if format == "chatml":
+                chat_pairs.extend(
+                    format_chatml_conversations(block, performer)
+                )
+            elif format == "sharegpt":
+                chat_pairs.extend(
+                    format_sharegpt_conversations(block, performer)
+                )
     return chat_pairs
 
 

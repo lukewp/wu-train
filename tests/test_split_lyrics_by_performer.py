@@ -1,3 +1,4 @@
+import unittest
 import os
 import tempfile
 import shutil
@@ -524,6 +525,95 @@ class TestIgnoreSectionsAfterIgnoreKeys(unittest.TestCase):
         # "Group line" should not be attributed
         for performer in performer_chunks:
             self.assertNotIn("Group line", performer_chunks[performer])
+
+
+# 5. ShareGPT Prompt Completion Pairs
+class TestShareGPTPromptCompletionPairs(unittest.TestCase):
+    def setUp(self):
+        from src.split_lyrics_by_performer import split_lines_to_jsonl_pairs
+        self.split_lines_to_jsonl_pairs = split_lines_to_jsonl_pairs
+
+    def test_sharegpt_basic_structure(self):
+        lines = [
+            "[RZA] Yo, check it!",
+            "[GZA] The genius in the building.",
+            "[RZA] Wu-Tang forever!"
+        ]
+        pairs = self.split_lines_to_jsonl_pairs(lines,
+                                                performer="RZA",
+                                                format="sharegpt"
+                                                )
+        for msg_list in pairs:
+            self.assertIsInstance(msg_list, list)
+            for msg in msg_list:
+                self.assertIn("from", msg)
+                self.assertIn("value", msg)
+                self.assertIn(msg["from"], ["system", "human", "gpt"])
+
+    def test_block_splitting_and_ignore_logic(self):
+        # Each tuple: (input lines, expected number of pairs, description)
+        test_cases = [
+            # Only key lines, no output
+            (["[RZA]", "[GZA]", "[Method Man]"], 0, "Only key lines"),
+            # Key lines with single non-key lines, no output
+            (["[RZA]", "Yo!", "[GZA]", "Genius!", "[Method Man]", "Meth!"],
+                0, "Key lines with single non-key lines"),
+            # Ignore key in block, no output
+            (["Lyric 1", "[IGNORE]", "Lyric 2"], 0, "Block with ignore key"),
+            # Valid block of two lines, output
+            (["Lyric 1", "Lyric 2"], 1, "Valid block of two lines"),
+            # Mixed: valid block, then ignore key, then valid block
+            (["Lyric 1", "Lyric 2", "[IGNORE]", "Lyric 3", "Lyric 4"],
+                2, "Valid block, ignore key, valid block"),
+            # Mixed: valid block, empty line, valid block
+            (["Lyric 1", "Lyric 2", "", "Lyric 3", "Lyric 4"],
+                2, "Valid blocks split by empty line"),
+        ]
+        for lines, expected_pairs, desc in test_cases:
+            pairs = self.split_lines_to_jsonl_pairs(lines,
+                                                    performer="RZA",
+                                                    format="sharegpt"
+                                                    )
+            self.assertEqual(len(pairs), expected_pairs, f"Failed: {desc}")
+
+    def test_sharegpt_content_and_roles(self):
+        lines = [
+            "[RZA] Yo, check it!",
+            "[GZA] The genius in the building.",
+            "[RZA] Wu-Tang forever!"
+        ]
+        pairs = self.split_lines_to_jsonl_pairs(lines,
+                                                performer="RZA",
+                                                format="sharegpt"
+                                                )
+        # Check that the first message is system, then alternates human/gpt
+        self.assertEqual(pairs[0][0]["from"], "system")
+        self.assertTrue(any(msg["from"] == "human" for msg in pairs[0]))
+        self.assertTrue(any(msg["from"] == "gpt" for msg in pairs[0]))
+
+    def test_sharegpt_verse_breaks(self):
+        lines = [
+            "[RZA] Verse one line one",
+            "[RZA] Verse one line two",
+            "",
+            "[GZA] Verse two line one"
+        ]
+        pairs = self.split_lines_to_jsonl_pairs(
+            lines, performer="RZA", format="sharegpt"
+        )
+        # Only one block should be present, since the second block
+        #  contains an ignore key
+        self.assertEqual(len(pairs), 1)
+
+    def test_sharegpt_empty_lines(self):
+        lines = ["", "[RZA] Wu-Tang!"]
+        pairs = self.split_lines_to_jsonl_pairs(
+            lines, performer="RZA", format="sharegpt"
+        )
+        # Should skip empty lines
+        for msg_list in pairs:
+            for msg in msg_list:
+                self.assertNotEqual(msg["value"].strip(), "")
 
 
 # 6. Output Text Files for Performers

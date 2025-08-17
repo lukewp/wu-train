@@ -5,6 +5,7 @@ beautifulsoup4
 
 # For Jupyter:
 ipykernel
+ipywidgets
 
 # For PEP-8 compliance testing:
 pycodestyle
