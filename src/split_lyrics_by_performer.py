@@ -32,9 +32,7 @@ __all__ = [
     'split_lyrics_by_performer',
     'write_performer_files',
     'write_performer_jsonl',
-    'write_performer_hf_jsonl',
     'split_lines_to_jsonl_pairs',
-    'split_lines_to_prompt_completion_pairs',
     'load_lyrics_file',
     'IGNORE_SET',
 ]
@@ -190,6 +188,22 @@ def classify_key(
     return 'skip'
 
 
+# Helper: check if any line in a block is an ignore key
+def block_has_ignore_key(block):
+    for line in block:
+        # Check both key lines and non-key lines for ignore keys
+        key_match = re.match(r'^\[([^\]]+)\]$', line.strip())
+        if key_match:
+            key_norm = normalize_key_string(key_match.group(1))
+            if key_norm in IGNORE_SET:
+                return True
+        # Also check if the line itself contains an ignore key
+        line_norm = normalize_key_string(line.strip())
+        if line_norm in IGNORE_SET:
+            return True
+    return False
+
+
 # Helper: normalize a single key string using the same logic as
 #   extract_key_candidates_from_lines
 def normalize_key_string(
@@ -306,88 +320,114 @@ def split_lyrics_by_performer(
 
 
 # Helper: split lines into JSONL prompt/completion pairs based on verse breaks
+def format_chatml_conversations(block: List[str],
+                                performer: str) -> List[Dict[str, list]]:
+    """Format a block of lyric lines into ChatML conversation objects."""
+    system_message = {
+        "role": "system",
+        "content": (
+            f"You are Wu-Tang Clan member {performer}. "
+            "When a user prompts you with one of your lyrics, "
+            "you deliver the next line."
+        )
+    }
+    pairs = []
+    for i in range(len(block) - 1):
+        user_msg = block[i].strip()
+        assistant_msg = block[i + 1].strip()
+        messages = [
+            system_message,
+            {"role": "user", "content": user_msg},
+            {"role": "assistant", "content": assistant_msg}
+        ]
+        pairs.append({"conversations": messages})
+    return pairs
+
+
+def format_sharegpt_conversations(block: List[str],
+                                  performer: str) -> List[list]:
+    """Format a block of lyric lines into ShareGPT conversation lists."""
+    system_message = {
+        "from": "system",
+        "value": (
+            f"You are Wu-Tang Clan member {performer}. "
+            "When a user prompts you with one of your lyrics, "
+            "you deliver the next line."
+        )
+    }
+    pairs = []
+    for i in range(len(block) - 1):
+        user_msg = block[i].strip()
+        assistant_msg = block[i + 1].strip()
+        messages = [
+            system_message,
+            {"from": "human", "value": user_msg},
+            {"from": "gpt", "value": assistant_msg}
+        ]
+        pairs.append(messages)
+    return pairs
+
+
 def split_lines_to_jsonl_pairs(
     lines: List[str],
     performer: str,
-    prompt_sep: str = " ++++",
-    completion_stop: str = " ####"
-) -> List[Dict[str, list]]:
+    format: str = "chatml"
+) -> list:
     """
-    Given a list of lyric lines, split into OpenAI chat-format JSONL dicts for
-     LLM fine-tuning. Each dict has a 'messages' key with system, user, and
-     assistant roles. Each prompt is a line, and the completion is the next
-     line, with verse breaks (empty lines) resetting the pairing.
+    Given a list of lyric lines, split into Unsloth-compatible JSONL objects
+    for LLM fine-tuning.
     Args:
         lines: List of lyric lines (may include empty lines for verse breaks).
         performer: Name of the performer for the system prompt.
-        prompt_sep: String to append to the prompt (default: ' ++++').
-        completion_stop: String to append to the completion (default: ' ####').
+        format: Output format ('chatml' or 'sharegpt').
     Returns:
-        List of dicts with 'messages' key (OpenAI chat format).
+        List of dicts (ChatML) or lists (ShareGPT) for Unsloth chat_template
+        format.
     """
     chat_pairs = []
-    system_message = {"role": "system",
-                      "content": f"You are Wu-Tang Clan member {performer}"
-                      ". When a user prompts you with one of your lyrics, "
-                      "you deliver the next line."}
     block = []
+
+    def is_key_line(line):
+        return re.match(r'^\[([^\]]+)\]$', line.strip()) is not None
+
+    block_has_key_line = False
     for line in lines:
-        if line.strip() == '':
+        if is_key_line(line) or line.strip() == '':
+            # On key line or empty line, process current block
             if block:
-                for i in range(len(block) - 1):
-                    user_msg = block[i].strip()
-                    assistant_msg = block[i+1].strip()
-                    messages = [
-                        system_message,
-                        {"role": "user", "content": user_msg},
-                        {"role": "assistant", "content": assistant_msg}
-                    ]
-                    chat_pairs.append({"messages": messages})
+                # If any line in the block is a key line, skip the block
+                if (len(block) >= 2 and not block_has_key_line
+                        and not block_has_ignore_key(block)):
+                    if format == "chatml":
+                        chat_pairs.extend(
+                            format_chatml_conversations(block, performer)
+                        )
+                    elif format == "sharegpt":
+                        chat_pairs.extend(
+                            format_sharegpt_conversations(block, performer)
+                        )
                 block = []
-        else:
+                block_has_key_line = False
+            continue
+        # Only add non-key, non-empty lines to block
+        if not is_key_line(line) and line.strip() != '':
             block.append(line)
+    # Process any remaining block
     if block:
-        for i in range(len(block) - 1):
-            user_msg = block[i].strip()
-            assistant_msg = block[i+1].strip()
-            messages = [
-                system_message,
-                {"role": "user", "content": user_msg},
-                {"role": "assistant", "content": assistant_msg}
-            ]
-            chat_pairs.append({"messages": messages})
+        if (
+            len(block) >= 2
+            and not block_has_key_line
+            and not block_has_ignore_key(block)
+        ):
+            if format == "chatml":
+                chat_pairs.extend(
+                    format_chatml_conversations(block, performer)
+                )
+            elif format == "sharegpt":
+                chat_pairs.extend(
+                    format_sharegpt_conversations(block, performer)
+                )
     return chat_pairs
-
-
-def split_lines_to_prompt_completion_pairs(
-    lines: List[str],
-    prompt_sep: str = " ++++",
-    completion_stop: str = " ####",
-) -> List[Dict[str, str]]:
-    """Return Hugging Face style prompt/completion pairs.
-
-    Each prompt is a line with ``prompt_sep`` appended and the completion is
-    the subsequent line with ``completion_stop`` appended. Verse breaks
-    (empty lines) reset the pairing logic.
-    """
-    pairs: List[Dict[str, str]] = []
-    block: List[str] = []
-    for line in lines:
-        if line.strip() == "":
-            if block:
-                for i in range(len(block) - 1):
-                    prompt = block[i].strip() + prompt_sep
-                    completion = block[i + 1].strip() + completion_stop
-                    pairs.append({"prompt": prompt, "completion": completion})
-                block = []
-        else:
-            block.append(line)
-    if block:
-        for i in range(len(block) - 1):
-            prompt = block[i].strip() + prompt_sep
-            completion = block[i + 1].strip() + completion_stop
-            pairs.append({"prompt": prompt, "completion": completion})
-    return pairs
 
 
 # 6. Output Functions
@@ -426,8 +466,7 @@ def write_performer_jsonl(
     performer_chunks: Dict[str, List[str]],
     out_dir: str,
     alias_map: Optional[Dict[str, List[str]]] = None,
-    prompt_sep: str = " ++++",
-    completion_stop: str = " ####"
+    format: str = "chatml"
 ) -> None:
     """
     Write each performer's lyrics as JSONL prompt/completion pairs for LLM
@@ -438,9 +477,7 @@ def write_performer_jsonl(
         out_dir:            Output directory path.
         alias_map:          Optional dict of canonical performer
                               names -> aliases.
-        prompt_sep:         Separator to end the prompt (default: ' ++++').
-        completion_stop:    Stop sequence to end the completion
-                              (default: ' ####').
+        format:             Output format ('chatml' or 'sharegpt').
     """
     os.makedirs(out_dir, exist_ok=True)
     valid_performers = set(performer_chunks.keys())
@@ -457,41 +494,10 @@ def write_performer_jsonl(
         chat_pairs = split_lines_to_jsonl_pairs(
             lines,
             performer,
-            prompt_sep=prompt_sep,
-            completion_stop=completion_stop
+            format=format
         )
         with open(out_path, "w", encoding="utf-8") as f:
             for obj in chat_pairs:
-                f.write(json.dumps(obj, ensure_ascii=False) + "\n")
-
-
-def write_performer_hf_jsonl(
-    performer_chunks: Dict[str, List[str]],
-    out_dir: str,
-    alias_map: Optional[Dict[str, List[str]]] = None,
-    prompt_sep: str = " ++++",
-    completion_stop: str = " ####",
-) -> None:
-    """Write Hugging Face style prompt/completion JSONL files."""
-    os.makedirs(out_dir, exist_ok=True)
-    valid_performers = set(performer_chunks.keys())
-    if alias_map is not None:
-        valid_performers = set(alias_map.keys())
-    for performer, lines in performer_chunks.items():
-        if alias_map is not None and performer not in valid_performers:
-            continue
-        safe_name = ''.join(
-            c if c.isalnum() or c in (' ', '_') else '_'
-            for c in performer
-        ).replace(' ', '_')
-        out_path = os.path.join(out_dir, f"{safe_name}.jsonl")
-        pairs = split_lines_to_prompt_completion_pairs(
-            lines,
-            prompt_sep=prompt_sep,
-            completion_stop=completion_stop,
-        )
-        with open(out_path, "w", encoding="utf-8") as f:
-            for obj in pairs:
                 f.write(json.dumps(obj, ensure_ascii=False) + "\n")
 
 
@@ -528,8 +534,26 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
         description=(
-            "Split lyrics by performer and optionally export JSONL "
-            "for LLM fine-tuning"
+            "Split lyrics by performer and export in Unsloth-compatible"
+            " JSONL formats for LLM fine-tuning.\n"
+            "\nOutput format options (choose one):\n"
+            "  --chatml    Export ChatML format (Unsloth default,"
+            " recommended)\n"
+            "  --sharegpt  Export ShareGPT format (OpenChat/Unsloth"
+            " compatible)\n"
+            "\nIf no format is specified, ChatML is used by default."
+        ),
+        epilog=(
+            "Examples:\n"
+            "  python -m src.split_lyrics_by_performer"
+            " wu-tang-clan-lyrics-dataset/wu-tang.txt out\n"
+            "  python -m src.split_lyrics_by_performer"
+            " wu-tang-clan-lyrics-dataset/wu-tang.txt out --chatml\n"
+            "  python -m src.split_lyrics_by_performer"
+            " wu-tang-clan-lyrics-dataset/wu-tang.txt out --sharegpt\n"
+            "  python -m src.split_lyrics_by_performer"
+            " wu-tang-clan-lyrics-dataset/wu-tang.txt out"
+            " --performer rza --chatml\n"
         )
     )
     parser.add_argument(
@@ -546,14 +570,14 @@ if __name__ == "__main__":
     )
     group = parser.add_mutually_exclusive_group()
     group.add_argument(
-        "--openai",
+        "--chatml",
         action="store_true",
-        help="Export OpenAI chat-format JSONL files",
+        help="Export ChatML format (Unsloth default, recommended)",
     )
     group.add_argument(
-        "--hf",
+        "--sharegpt",
         action="store_true",
-        help="Export Hugging Face prompt/completion JSONL files",
+        help="Export ShareGPT format (OpenChat/Unsloth compatible)",
     )
     parser.add_argument(
         "--performer",
@@ -594,21 +618,27 @@ if __name__ == "__main__":
             sys.exit(1)
         performer_chunks = {canonical: performer_chunks.get(canonical, [])}
 
-    if args.openai:
-        print(f"Writing OpenAI JSONL files for performers to: {out_dir}")
+    if args.chatml or (not args.sharegpt):
+        print(
+            f"Writing ChatML JSONL files for performers to: {out_dir}"
+        )
         write_performer_jsonl(
             performer_chunks,
             out_dir,
             alias_map=alias_map,
+            format="chatml"
         )
         count = len([k for k in performer_chunks if k in alias_map])
         print("Done.", f"{count} JSONL files written.")
-    elif args.hf:
-        print(f"Writing Hugging Face JSONL files for performers to: {out_dir}")
-        write_performer_hf_jsonl(
+    elif args.sharegpt:
+        print(
+            f"Writing ShareGPT JSONL files for performers to: {out_dir}"
+        )
+        write_performer_jsonl(
             performer_chunks,
             out_dir,
             alias_map=alias_map,
+            format="sharegpt"
         )
         count = len([k for k in performer_chunks if k in alias_map])
         print("Done.", f"{count} JSONL files written.")
@@ -621,3 +651,7 @@ if __name__ == "__main__":
         )
         count = len([k for k in performer_chunks if k in alias_map])
         print("Done.", f"{count} performer files written.")
+
+    print("\nNote: For custom LLM formats, use Unsloth's chat_template"
+          " reformatter as middleware to convert ChatML/ShareGPT output"
+          " to your target format.")

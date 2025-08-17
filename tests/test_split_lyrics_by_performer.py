@@ -1,9 +1,9 @@
-
+import unittest
 import os
 import tempfile
 import shutil
-import unittest
 import json
+
 from io import StringIO
 from contextlib import contextmanager
 
@@ -38,22 +38,19 @@ class TestImportLyricsFile(unittest.TestCase):
     handling.
     """
     def test_load_lyrics_file(self):
-        """Test loading and reading the full contents of the lyrics file."""
-        # Use the actual dataset file for this test
-        lyrics_path = os.path.join(
-            os.path.dirname(__file__),
-            '../wu-tang-clan-lyrics-dataset/wu-tang.txt'
-        )
-        lyrics_path = os.path.abspath(lyrics_path)
-        os.makedirs(os.path.dirname(lyrics_path), exist_ok=True)
-        with open(lyrics_path, 'w', encoding='utf-8') as f:
-            f.write("[raekwon]\n" + ("sample lyric line " * 8))
-        contents = load_lyrics_file(lyrics_path)
-        # Check that the file is not empty and contains expected performer
-        #  label(s)
-        self.assertIsInstance(contents, str)
-        self.assertTrue(len(contents) > 100)
-        self.assertIn('[raekwon]', contents.lower())
+        """
+        Test loading and reading the full contents of a lyrics file
+            (temp file, does not overwrite real dataset).
+        """
+        with tempfile.TemporaryDirectory() as tmpdir:
+            lyrics_path = os.path.join(tmpdir, 'test_lyrics.txt')
+            with open(lyrics_path, 'w', encoding='utf-8') as f:
+                f.write("[raekwon]\n" + ("sample lyric line " * 8))
+            contents = load_lyrics_file(lyrics_path)
+            # Check that the file is not empty and contains expected label(s)
+            self.assertIsInstance(contents, str)
+            self.assertTrue(len(contents) > 100)
+            self.assertIn('[raekwon]', contents.lower())
 
     def test_file_not_found(self):
         """Test handling of file not found error."""
@@ -529,6 +526,95 @@ class TestIgnoreSectionsAfterIgnoreKeys(unittest.TestCase):
             self.assertNotIn("Group line", performer_chunks[performer])
 
 
+# 5. ShareGPT Prompt Completion Pairs
+class TestShareGPTPromptCompletionPairs(unittest.TestCase):
+    def setUp(self):
+        from src.split_lyrics_by_performer import split_lines_to_jsonl_pairs
+        self.split_lines_to_jsonl_pairs = split_lines_to_jsonl_pairs
+
+    def test_sharegpt_basic_structure(self):
+        lines = [
+            "[RZA] Yo, check it!",
+            "[GZA] The genius in the building.",
+            "[RZA] Wu-Tang forever!"
+        ]
+        pairs = self.split_lines_to_jsonl_pairs(lines,
+                                                performer="RZA",
+                                                format="sharegpt"
+                                                )
+        for msg_list in pairs:
+            self.assertIsInstance(msg_list, list)
+            for msg in msg_list:
+                self.assertIn("from", msg)
+                self.assertIn("value", msg)
+                self.assertIn(msg["from"], ["system", "human", "gpt"])
+
+    def test_block_splitting_and_ignore_logic(self):
+        # Each tuple: (input lines, expected number of pairs, description)
+        test_cases = [
+            # Only key lines, no output
+            (["[RZA]", "[GZA]", "[Method Man]"], 0, "Only key lines"),
+            # Key lines with single non-key lines, no output
+            (["[RZA]", "Yo!", "[GZA]", "Genius!", "[Method Man]", "Meth!"],
+                0, "Key lines with single non-key lines"),
+            # Ignore key in block, no output
+            (["Lyric 1", "[IGNORE]", "Lyric 2"], 0, "Block with ignore key"),
+            # Valid block of two lines, output
+            (["Lyric 1", "Lyric 2"], 1, "Valid block of two lines"),
+            # Mixed: valid block, then ignore key, then valid block
+            (["Lyric 1", "Lyric 2", "[IGNORE]", "Lyric 3", "Lyric 4"],
+                2, "Valid block, ignore key, valid block"),
+            # Mixed: valid block, empty line, valid block
+            (["Lyric 1", "Lyric 2", "", "Lyric 3", "Lyric 4"],
+                2, "Valid blocks split by empty line"),
+        ]
+        for lines, expected_pairs, desc in test_cases:
+            pairs = self.split_lines_to_jsonl_pairs(lines,
+                                                    performer="RZA",
+                                                    format="sharegpt"
+                                                    )
+            self.assertEqual(len(pairs), expected_pairs, f"Failed: {desc}")
+
+    def test_sharegpt_content_and_roles(self):
+        lines = [
+            "[RZA] Yo, check it!",
+            "[GZA] The genius in the building.",
+            "[RZA] Wu-Tang forever!"
+        ]
+        pairs = self.split_lines_to_jsonl_pairs(lines,
+                                                performer="RZA",
+                                                format="sharegpt"
+                                                )
+        # Check that the first message is system, then alternates human/gpt
+        self.assertEqual(pairs[0][0]["from"], "system")
+        self.assertTrue(any(msg["from"] == "human" for msg in pairs[0]))
+        self.assertTrue(any(msg["from"] == "gpt" for msg in pairs[0]))
+
+    def test_sharegpt_verse_breaks(self):
+        lines = [
+            "[RZA] Verse one line one",
+            "[RZA] Verse one line two",
+            "",
+            "[GZA] Verse two line one"
+        ]
+        pairs = self.split_lines_to_jsonl_pairs(
+            lines, performer="RZA", format="sharegpt"
+        )
+        # Only one block should be present, since the second block
+        #  contains an ignore key
+        self.assertEqual(len(pairs), 1)
+
+    def test_sharegpt_empty_lines(self):
+        lines = ["", "[RZA] Wu-Tang!"]
+        pairs = self.split_lines_to_jsonl_pairs(
+            lines, performer="RZA", format="sharegpt"
+        )
+        # Should skip empty lines
+        for msg_list in pairs:
+            for msg in msg_list:
+                self.assertNotEqual(msg["value"].strip(), "")
+
+
 # 6. Output Text Files for Performers
 class TestOutputTextFilesForPerformers(unittest.TestCase):
     """
@@ -612,7 +698,7 @@ class TestJsonlPromptCompletionPairs(unittest.TestCase):
 
         expected = [
             {
-                "messages": [
+                "conversations": [
                     {
                         "role": "system",
                         "content": (
@@ -634,7 +720,7 @@ class TestJsonlPromptCompletionPairs(unittest.TestCase):
                 ]
             },
             {
-                "messages": [
+                "conversations": [
                     {
                         "role": "system",
                         "content": (
@@ -654,7 +740,7 @@ class TestJsonlPromptCompletionPairs(unittest.TestCase):
                 ]
             },
             {
-                "messages": [
+                "conversations": [
                     {
                         "role": "system",
                         "content": (
@@ -674,7 +760,7 @@ class TestJsonlPromptCompletionPairs(unittest.TestCase):
                 ]
             },
             {
-                "messages": [
+                "conversations": [
                     {
                         "role": "system",
                         "content": (
@@ -694,7 +780,7 @@ class TestJsonlPromptCompletionPairs(unittest.TestCase):
                 ]
             },
             {
-                "messages": [
+                "conversations": [
                     {
                         "role": "system",
                         "content": (
@@ -715,7 +801,7 @@ class TestJsonlPromptCompletionPairs(unittest.TestCase):
                 ]
             },
             {
-                "messages": [
+                "conversations": [
                     {
                         "role": "system",
                         "content": (
@@ -735,7 +821,7 @@ class TestJsonlPromptCompletionPairs(unittest.TestCase):
                 ]
             },
             {
-                "messages": [
+                "conversations": [
                     {
                         "role": "system",
                         "content": (
@@ -757,7 +843,7 @@ class TestJsonlPromptCompletionPairs(unittest.TestCase):
                 ]
             },
             {
-                "messages": [
+                "conversations": [
                     {
                         "role": "system",
                         "content": (
@@ -780,81 +866,6 @@ class TestJsonlPromptCompletionPairs(unittest.TestCase):
             },
         ]
 
-        self.assertEqual(pairs, expected)
-
-
-class TestHfPromptCompletionPairs(unittest.TestCase):
-    """Tests for Hugging Face prompt/completion splitting logic."""
-
-    def setUp(self):
-        self.deck_lyrics = [
-            "ladies and gentlemen, we'd like to welcome to you",
-            "all the way from the slums of shaolin",
-            "special uninvited guests",
-            "came in through the back door",
-            "ladies and gentlemen, it's them!",
-            "",
-            "dance with the mantis, note the slim chances",
-            "chant this, anthem swing like pete sampras",
-            "takin it straight to big man on campus",
-            "brandish your weapon or get dropped to the canvas",
-            "scandalous, made the metro panic",
-        ]
-
-    def test_hf_pairs_respect_verse_breaks(self):
-        pairs = split_lines_to_prompt_completion_pairs(self.deck_lyrics)
-        expected = [
-            {
-                "prompt": (
-                    "ladies and gentlemen, we'd like to welcome to you "
-                    "++++"
-                ),
-                "completion": (
-                    "all the way from the slums of shaolin "
-                    "####"
-                ),
-            },
-            {
-                "prompt": "all the way from the slums of shaolin " "++++",
-                "completion": "special uninvited guests " "####",
-            },
-            {
-                "prompt": "special uninvited guests ++++",
-                "completion": "came in through the back door ####",
-            },
-            {
-                "prompt": "came in through the back door " "++++",
-                "completion": "ladies and gentlemen, it's them! " "####",
-            },
-            {
-                "prompt": (
-                    "dance with the mantis, note the slim chances "
-                    "++++"
-                ),
-                "completion": (
-                    "chant this, anthem swing like pete sampras "
-                    "####"
-                ),
-            },
-            {
-                "prompt": "chant this, anthem swing like pete sampras " "++++",
-                "completion": "takin it straight to big man on campus " "####",
-            },
-            {
-                "prompt": "takin it straight to big man on campus " "++++",
-                "completion": (
-                    "brandish your weapon or get dropped to the canvas "
-                    "####"
-                ),
-            },
-            {
-                "prompt": (
-                    "brandish your weapon or get dropped to the canvas "
-                    "++++"
-                ),
-                "completion": "scandalous, made the metro panic " "####",
-            },
-        ]
         self.assertEqual(pairs, expected)
 
 
