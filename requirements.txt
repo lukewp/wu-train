@@ -8,3 +8,6 @@ ipykernel
 
 # For PEP-8 compliance testing:
 pycodestyle
+
+# For running tests:
+pytest

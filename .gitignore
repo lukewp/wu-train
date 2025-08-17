@@ -55,13 +55,12 @@ coverage.xml
 .DS_Store
 
 # Output and data
-out/
+out/*
 *.out
 *.log
 
 # Dataset artifacts
 wu-tang-clan-lyrics-dataset/**/*
-!wu-tang-clan-lyrics-dataset/wu-tang.txt
 
 # Temporary files
 *.tmp

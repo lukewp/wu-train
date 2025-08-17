@@ -1,9 +1,9 @@
-
 import os
 import tempfile
 import shutil
 import unittest
 import json
+
 from io import StringIO
 from contextlib import contextmanager
 
@@ -38,22 +38,19 @@ class TestImportLyricsFile(unittest.TestCase):
     handling.
     """
     def test_load_lyrics_file(self):
-        """Test loading and reading the full contents of the lyrics file."""
-        # Use the actual dataset file for this test
-        lyrics_path = os.path.join(
-            os.path.dirname(__file__),
-            '../wu-tang-clan-lyrics-dataset/wu-tang.txt'
-        )
-        lyrics_path = os.path.abspath(lyrics_path)
-        os.makedirs(os.path.dirname(lyrics_path), exist_ok=True)
-        with open(lyrics_path, 'w', encoding='utf-8') as f:
-            f.write("[raekwon]\n" + ("sample lyric line " * 8))
-        contents = load_lyrics_file(lyrics_path)
-        # Check that the file is not empty and contains expected performer
-        #  label(s)
-        self.assertIsInstance(contents, str)
-        self.assertTrue(len(contents) > 100)
-        self.assertIn('[raekwon]', contents.lower())
+        """
+        Test loading and reading the full contents of a lyrics file
+            (temp file, does not overwrite real dataset).
+        """
+        with tempfile.TemporaryDirectory() as tmpdir:
+            lyrics_path = os.path.join(tmpdir, 'test_lyrics.txt')
+            with open(lyrics_path, 'w', encoding='utf-8') as f:
+                f.write("[raekwon]\n" + ("sample lyric line " * 8))
+            contents = load_lyrics_file(lyrics_path)
+            # Check that the file is not empty and contains expected label(s)
+            self.assertIsInstance(contents, str)
+            self.assertTrue(len(contents) > 100)
+            self.assertIn('[raekwon]', contents.lower())
 
     def test_file_not_found(self):
         """Test handling of file not found error."""
@@ -612,7 +609,7 @@ class TestJsonlPromptCompletionPairs(unittest.TestCase):
 
         expected = [
             {
-                "messages": [
+                "conversations": [
                     {
                         "role": "system",
                         "content": (
@@ -634,7 +631,7 @@ class TestJsonlPromptCompletionPairs(unittest.TestCase):
                 ]
             },
             {
-                "messages": [
+                "conversations": [
                     {
                         "role": "system",
                         "content": (
@@ -654,7 +651,7 @@ class TestJsonlPromptCompletionPairs(unittest.TestCase):
                 ]
             },
             {
-                "messages": [
+                "conversations": [
                     {
                         "role": "system",
                         "content": (
@@ -674,7 +671,7 @@ class TestJsonlPromptCompletionPairs(unittest.TestCase):
                 ]
             },
             {
-                "messages": [
+                "conversations": [
                     {
                         "role": "system",
                         "content": (
@@ -694,7 +691,7 @@ class TestJsonlPromptCompletionPairs(unittest.TestCase):
                 ]
             },
             {
-                "messages": [
+                "conversations": [
                     {
                         "role": "system",
                         "content": (
@@ -715,7 +712,7 @@ class TestJsonlPromptCompletionPairs(unittest.TestCase):
                 ]
             },
             {
-                "messages": [
+                "conversations": [
                     {
                         "role": "system",
                         "content": (
@@ -735,7 +732,7 @@ class TestJsonlPromptCompletionPairs(unittest.TestCase):
                 ]
             },
             {
-                "messages": [
+                "conversations": [
                     {
                         "role": "system",
                         "content": (
@@ -757,7 +754,7 @@ class TestJsonlPromptCompletionPairs(unittest.TestCase):
                 ]
             },
             {
-                "messages": [
+                "conversations": [
                     {
                         "role": "system",
                         "content": (

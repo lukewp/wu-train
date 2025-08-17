@@ -13,7 +13,7 @@ This project processes and parses the full lyrics of the Wu-Tang Clan and affili
 - **Extensible:** Easily add new performers/aliases or update ignore logic by editing the relevant JSON/config files.
 
 **Dataset Handling:**
-- The dataset is included directly in this repository as `wu-tang-clan-lyrics-dataset/` to ensure long-term stability and reproducibility, even if the upstream source changes or disappears.
+- The Wu Tang Clan Lyrics Dataset is meant to be included directly in the root of this repository as `./wu-tang-clan-lyrics-dataset/`.
 - Updates to the dataset are performed manually and only as needed. If the upstream dataset is updated, changes can be pulled and the code refactored as necessary.
 
 **Development Approach:**
@@ -108,9 +108,13 @@ python -m src.split_lyrics_by_performer wu-tang-clan-lyrics-dataset/wu-tang.txt 
 ## Usage
 
 1. Open the project in a devcontainer (VS Code recommended)
-2. If the `wu-tang-clan-lyrics-dataset/` folder is missing or you want to update it, you can clone the upstream dataset:
+2. If the `wu-tang-clan-lyrics-dataset/` folder is missing or you want to update it, you can clone the upstream dataset, then setting to the commit from which this repo was built:
    ```bash
    git clone https://github.com/mathisve/wu-tang-clan-lyrics-dataset.git wu-tang-clan-lyrics-dataset
+
+   cd wu-tang-clan-lyrics-dataset
+
+   git reset --hard 5572a1e0150a6c10b927da049415dc20a359ba03
    ```
    (Or update the folder as needed.)
 3. For interactive exploration, open `interactive_lyrics_lookup.ipynb` and enter a performer or alias to view their lyrics directly in the notebook.
